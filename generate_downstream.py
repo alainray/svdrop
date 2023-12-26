@@ -14,7 +14,7 @@ echo "Done"
 """
 
 dataset_dir = {
-    "CUB": "cub/data/waterbird_complete95_forest2water2/",
+    "CUB": "../datasets/waterbird_complete95_forest2water2/",
     "CelebA": "celebA/data/",
     "MultiNLI": "multinli/data/",
     "jigsaw": "jigsaw/data/",

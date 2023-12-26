@@ -30,7 +30,7 @@ class CUBDataset(ConfounderDataset):
         self.augment_data = augment_data
 
         self.data_dir = os.path.join(
-            self.root_dir, "data",
+            self.root_dir,
             "_".join([self.target_name] + self.confounder_names))
 
         if not os.path.exists(self.data_dir):
