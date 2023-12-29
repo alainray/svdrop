@@ -8,6 +8,9 @@ from data.confounder_utils import prepare_confounder_data
 root_dir = "/u/scr/nlp/dro/"
 
 dataset_attributes = {
+    "MNISTCIFAR":{
+        "root_dir": "mnistcifar"
+    },
     "CelebA": {
         "root_dir": "celebA"
     },

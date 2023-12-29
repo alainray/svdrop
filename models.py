@@ -1,6 +1,12 @@
 model_attributes = {
+    
     "bert": {
         "feature_type": "text"
+    },
+    "scnn": {
+        "feature_type": "image",
+        "target_resolution": (64, 32),
+        "flatten": False,
     },
     "inception_v3": {
         "feature_type": "image",
@@ -31,3 +37,4 @@ model_attributes = {
         'feature_type': 'text'
     },
 }
+

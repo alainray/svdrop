@@ -237,6 +237,11 @@ def train(
             momentum=0.9,
             weight_decay=args.weight_decay,
         )
+        '''optimizer = torch.optim.Adam(            
+            filter(lambda p: p.requires_grad, model.parameters()),
+            lr=args.lr,
+            weight_decay=args.weight_decay,
+        )'''
         if args.scheduler:
             scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
                 optimizer,

@@ -3,12 +3,16 @@ import os
 import torch
 import numpy as np
 import csv
-
+from torch.nn.parameter import Parameter
 import torch
 import torch.nn as nn
 import torchvision
 from models import model_attributes
-
+from torch import Tensor
+import torch.nn.init as init
+import math
+from torch.nn import functional as F
+from random import randint, random
 
 class Logger(object):
     def __init__(self, fpath=None, mode="w"):
@@ -153,10 +157,12 @@ def get_model(model, pretrained, resume, n_classes, dataset, log_dir):
         d = train_data.input_size()[0]
         model = nn.Linear(d, n_classes)
         model.has_aux_logits = False
+    elif model == "scnn":
+        model = SimpleCNN([32,64,128],1,num_classes=n_classes, add_pooling=False)
     elif model == "resnet50":
         model = torchvision.models.resnet50(pretrained=pretrained)
         d = model.fc.in_features
-        model.fc = nn.Linear(d, n_classes)
+        model.fc = nn.SVDropClassifier(d, n_classes)
     elif model == "resnet34":
         model = torchvision.models.resnet34(pretrained=pretrained)
         d = model.fc.in_features
@@ -193,3 +199,124 @@ def get_model(model, pretrained, resume, n_classes, dataset, log_dir):
         raise ValueError(f"{model} Model not recognized.")
 
     return model
+
+
+class SimpleCNN(nn.Module):
+    """
+    Convolutional Neural Network
+    """
+    def __init__(self, num_channels, N, num_classes=1, add_pooling=False):
+        super(SimpleCNN, self).__init__()
+
+        if add_pooling:
+            stride=1
+        else:
+            stride=2
+
+        layer = nn.Sequential()
+        layer.add_module('conv1',nn.Conv2d(3, num_channels[0]*N, kernel_size=3, stride=stride))
+        layer.add_module('relu1',nn.ReLU(inplace=True))
+        if add_pooling:
+            layer.add_module('pool1',nn.MaxPool2d(kernel_size=2, stride=2))
+        layer.add_module('conv2',nn.Conv2d(num_channels[0]*N, num_channels[1]*N, kernel_size=3, stride=stride))
+        layer.add_module('relu2',nn.ReLU(inplace=True))
+        if add_pooling:
+            layer.add_module('pool2',nn.MaxPool2d(kernel_size=2, stride=2))
+        layer.add_module('conv3',nn.Conv2d(num_channels[1]*N, num_channels[2]*N, kernel_size=3, stride=stride))
+        layer.add_module('relu3',nn.ReLU(inplace=True))
+        if add_pooling:
+            layer.add_module('pool3',nn.MaxPool2d(kernel_size=2, stride=1))
+        #layer.add_module('gap', nn.AdaptiveAvgPool2d((6,6)))
+        layer.add_module('flatten', nn.Flatten())
+        self.features = layer
+
+        self.fc = SVDropClassifier(2688*N, num_classes)
+        '''for lin in [lin1, lin2, lin3]:
+            nn.init.xavier_uniform_(lin.weight)
+            nn.init.zeros_(lin.bias)'''
+
+    def forward(self, x):
+        x = self.features(x)
+        x = self.fc(x)
+        return x
+    
+class SVDropClassifier(nn.Module):
+    """
+    __constants__ = ['in_features', 'out_features']
+    in_features: int
+    out_features: int
+    weight: Tensor a """
+
+    def __init__(self, in_features: int, out_features: int, n_dirs=1000, bias: bool = True,
+                 device=None, dtype=None) -> None:
+        factory_kwargs = {'device': device, 'dtype': dtype}
+        super().__init__()
+        self.V = None
+        self.Lambda = None
+        self.n_dirs = n_dirs
+        self.mu_R = None
+        self.in_features = in_features
+        self.out_features = out_features
+        self.weight = Parameter(torch.empty((out_features, in_features), **factory_kwargs))
+        self.bias = Parameter(torch.empty(out_features, **factory_kwargs))
+        self.old_top_vector = None
+        self.reset_parameters()
+
+    def reset_parameters(self) -> None:
+        # Setting a=sqrt(5) in kaiming_uniform is the same as initializing with
+        # uniform(-1/sqrt(in_features), 1/sqrt(in_features)). For details, see
+        # https://github.com/pytorch/pytorch/issues/57109
+        self.reset_mask()
+        init.kaiming_uniform_(self.weight, a=math.sqrt(5))
+        fan_in, _ = init._calculate_fan_in_and_fan_out(self.weight)
+        bound = 1 / math.sqrt(fan_in) if fan_in > 0 else 0
+        init.uniform_(self.bias, -bound, bound)
+    
+    def set_n_dirs(self, n_dirs):
+        self.n_dirs = n_dirs
+        self.reset_mask()
+    
+    def set_singular(self, R: Tensor) -> None:
+        # Calculate  Eigenvectors
+        _, S, self.V = torch.pca_lowrank(R, center=True, q=self.n_dirs) # Right singular vectors of R
+        cos = nn.CosineSimilarity(dim=0, eps=1e-6)
+        if self.old_top_vector is not None:
+            sim = cos(self.old_top_vector, self.V[0])
+            print(f"Current top 5 Singular Values: {S[:5]}")
+            print(f"Similarity top1 : {sim}")
+        self.old_top_vector = self.V[0]
+        self.V = self.V.cuda()
+        self.V_inv = torch.linalg.pinv(self.V).cuda()                   # Pseudoinverse of V
+        self.mu_R = R.mean(dim=0).cuda()
+        self.Lambda = torch.diagflat(self.mask).cuda()
+        return S.cpu(), self.V.clone().cpu()
+        #print(self.V.shape,self.V_inv.shape,self.Lambda.shape)
+        
+    def reset_singular(self) -> None:
+        self.V = None
+        self.Lambda = None
+        self.V_inv = None
+        self.mu_R = None
+
+    def dropout_dim(self, indices=None,p=1.0):
+        if indices is None: # Randomly drop one index
+            indices =  [randint(0, self.n_dirs)] # Choose a random dimension
+        for index in indices:
+            if random() <= p: # Turn off direction with probability p
+                self.mask[index] = 0
+        self.Lambda = torch.diagflat(self.mask).cuda()
+
+    def reset_mask(self):
+        self.mask = torch.ones(self.n_dirs)
+        self.Lambda = torch.diagflat(self.mask)
+        
+    def forward(self, input: Tensor) -> Tensor:
+        if self.V is not None: # I want to remove some of my right singular directions!
+            new_weights = (((self.V @ self.Lambda) @ self.V_inv) @ self.weight.T).T
+            new_bias = (-self.mu_R*(new_weights - self.weight)).sum() + self.bias
+            return F.linear(input, new_weights, new_bias)
+        else: # I'm just a regular linear layer
+            return F.linear(input, self.weight, self.bias)
+
+    def extra_repr(self) -> str:
+        return f'in_features={self.in_features}, out_features={self.out_features}, bias={self.bias is not None}'

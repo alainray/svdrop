@@ -10,12 +10,15 @@ from data.cub_dataset import CUBDataset
 from data.dro_dataset import DRODataset
 from data.multinli_dataset import MultiNLIDataset
 from data.jigsaw_dataset import JigsawDataset
-
+from data.mnistcifar_dataset import MNISTCIFARDataset
 ########################
 ####### SETTINGS #######
 ########################
 
 confounder_settings = {
+    "MNISTCIFAR": {
+        "constructor": MNISTCIFARDataset
+    },
     "CelebA": {
         "constructor": CelebADataset
     },
@@ -35,7 +38,17 @@ confounder_settings = {
 ### DATA PREPARATION ###
 ########################
 def prepare_confounder_data(args, train, return_full_dataset=False):
-    if args.dataset != "jigsaw":
+    if args.dataset == "MNISTCIFAR":
+        full_dataset = confounder_settings[args.dataset]["constructor"](
+        root_dir=args.root_dir,
+        target_name=args.target_name,
+        confounder_names=args.confounder_names,
+        model_type=args.model,
+        augment_data=args.augment_data,
+        metadata_csv_name=args.metadata_csv_name if (args.metadata_csv_name is not None) else "metadata.csv"
+        )
+    elif args.dataset != "jigsaw":
+        
         full_dataset = confounder_settings[args.dataset]["constructor"](
             root_dir=args.root_dir,
             target_name=args.target_name,
