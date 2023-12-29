@@ -21,7 +21,7 @@ class LossComputer:
         btl=False,
         joint_dro_alpha=None,
     ):
-        assert loss_type in ["group_dro", "erm", "joint_dro"]
+        assert loss_type in ["group_dro", "reweight", "erm", "joint_dro"]
 
         self.criterion = criterion
         self.loss_type = loss_type
@@ -97,7 +97,8 @@ class LossComputer:
         return actual_loss
     
     def compute_reweight_loss(self, group_loss, group_count):
-        self.adv_probs =  1 / torch.sqrt(group_count)
+        total = group_count.sum()
+        self.adv_probs =  total / group_count
         reweight_loss = group_loss @ self.adv_probs
         return reweight_loss, self.adv_probs
 
