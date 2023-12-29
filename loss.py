@@ -61,7 +61,7 @@ class LossComputer:
 
     def loss(self, yhat, y, group_idx=None, is_training=False):
         # compute per-sample and per-group losses
-        per_sample_losses = self.criterion(yhat, y)
+        per_sample_losses = self.criterion(yhat, y) # CrossEntropyLoss(reduction="none")
         group_loss, group_count = self.compute_group_avg(
             per_sample_losses, group_idx)
         group_acc, group_count = self.compute_group_avg(
@@ -78,9 +78,12 @@ class LossComputer:
             else:
                 actual_loss, weights = self.compute_robust_loss_btl(
                     group_loss, group_count)
+
         elif self.loss_type == "joint_dro":
             actual_loss = self._joint_dro_loss_computer(per_sample_losses)
             weights = None
+        elif self.loss_type == "reweight":
+            actual_loss, weights = self.compute_reweight_loss(group_loss, group_count)
         else:
             assert self.loss_type == "erm"
 
@@ -92,6 +95,11 @@ class LossComputer:
                           weights)
 
         return actual_loss
+    
+    def compute_reweight_loss(self, group_loss, group_count):
+        self.adv_probs =  1 / torch.sqrt(group_count)
+        reweight_loss = group_loss @ self.adv_probs
+        return reweight_loss, self.adv_probs
 
     def compute_robust_loss(self, group_loss, group_count):
         adjusted_loss = group_loss
