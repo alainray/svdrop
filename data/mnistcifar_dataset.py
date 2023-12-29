@@ -67,7 +67,7 @@ class MNISTCIFARDataset(ConfounderDataset):
                 j+=1
         self.n_classes = 2
         # Convert to numpy
-        self.data_array = torch.from_numpy(np.array(self.data_array))
+        self.data_array = torch.stack(self.data_array)
         self.y_array = np.array(self.y_array)
         #self.y_array = (self.y_array > 4).astype(int)                   # binarize labels
         self.index_array = np.array(self.index_array)
