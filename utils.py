@@ -259,14 +259,13 @@ class SVDropClassifier(nn.Module):
         self.out_features = out_features
         self.weight = Parameter(torch.empty((out_features, in_features), **factory_kwargs))
         self.bias = Parameter(torch.empty(out_features, **factory_kwargs))
-        self.old_top_vector = None
         self.reset_parameters()
 
     def reset_parameters(self) -> None:
         # Setting a=sqrt(5) in kaiming_uniform is the same as initializing with
         # uniform(-1/sqrt(in_features), 1/sqrt(in_features)). For details, see
         # https://github.com/pytorch/pytorch/issues/57109
-        self.reset_mask()
+        self.reset_singular()
         init.kaiming_uniform_(self.weight, a=math.sqrt(5))
         fan_in, _ = init._calculate_fan_in_and_fan_out(self.weight)
         bound = 1 / math.sqrt(fan_in) if fan_in > 0 else 0
@@ -274,22 +273,14 @@ class SVDropClassifier(nn.Module):
     
     def set_n_dirs(self, n_dirs):
         self.n_dirs = n_dirs
-        self.reset_mask()
     
     def set_singular(self, R: Tensor) -> None:
         # Calculate  Eigenvectors
         _, S, self.V = torch.pca_lowrank(R, center=True, q=self.n_dirs) # Right singular vectors of R
-        cos = nn.CosineSimilarity(dim=0, eps=1e-6)
-        if self.old_top_vector is not None:
-            sim = cos(self.old_top_vector, self.V[0])
-            print(f"Current top 5 Singular Values: {S[:5]}")
-            print(f"Similarity top1 : {sim}")
-        self.old_top_vector = self.V[0]
         self.V = self.V.cuda()
         self.V_inv = torch.linalg.pinv(self.V).cuda()                   # Pseudoinverse of V
         self.mu_R = R.mean(dim=0).cuda()
         self.Lambda = torch.diagflat(self.mask).cuda()
-        return S.cpu(), self.V.clone().cpu()
         #print(self.V.shape,self.V_inv.shape,self.Lambda.shape)
         
     def reset_singular(self) -> None:
@@ -297,18 +288,15 @@ class SVDropClassifier(nn.Module):
         self.Lambda = None
         self.V_inv = None
         self.mu_R = None
+        self.mask = torch.ones(self.n_dirs)
+        self.Lambda = torch.diagflat(self.mask)
 
-    def dropout_dim(self, indices=None,p=1.0):
+    def dropout_dim(self, indices=None):
         if indices is None: # Randomly drop one index
             indices =  [randint(0, self.n_dirs)] # Choose a random dimension
         for index in indices:
-            if random() <= p: # Turn off direction with probability p
-                self.mask[index] = 0
+            self.mask[index] = 0                 # Turn it off
         self.Lambda = torch.diagflat(self.mask).cuda()
-
-    def reset_mask(self):
-        self.mask = torch.ones(self.n_dirs)
-        self.Lambda = torch.diagflat(self.mask)
         
     def forward(self, input: Tensor) -> Tensor:
         if self.V is not None: # I want to remove some of my right singular directions!

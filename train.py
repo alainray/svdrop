@@ -1,10 +1,10 @@
 import os
 import types
-
+from copy import deepcopy
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
+from random import random
 import numpy as np
 from tqdm import tqdm
 
@@ -237,11 +237,7 @@ def train(
             momentum=0.9,
             weight_decay=args.weight_decay,
         )
-        '''optimizer = torch.optim.Adam(            
-            filter(lambda p: p.requires_grad, model.parameters()),
-            lr=args.lr,
-            weight_decay=args.weight_decay,
-        )'''
+
         if args.scheduler:
             scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
                 optimizer,
@@ -259,6 +255,16 @@ def train(
     for epoch in range(epoch_offset, epoch_offset + args.n_epochs):
         logger.write("\nEpoch [%d]:\n" % epoch)
         logger.write(f"Training:\n")
+
+        if args.sv_dropout > random():
+            print("Dropping out first singular vector for this epoch!")
+            # get representations R
+            # calculate representations
+            R = get_reps(model, dataset["train_loader"])
+            # apply to model
+            model.fc.set_singular(R)
+            # dropout first dimension
+            model.fc.dropout_dim([0]) # dropout first singular vector!
         run_epoch(
             epoch,
             model,
@@ -276,6 +282,8 @@ def train(
             wandb_group="train",
             wandb=wandb,
         )
+
+        model.fc.reset_singular() # Reset SV_DROP changes
 
         logger.write(f"\nValidation:\n")
         val_loss_computer =  LossComputer(
@@ -360,7 +368,7 @@ def train(
             torch.save(model, os.path.join(args.log_dir, "last_model.pth"))
 
         if args.save_best:
-            if args.loss_type == "group_dro" or args.reweight_groups:
+            if args.loss_type in ["group_dro","reweight"] or args.reweight_groups:
                 curr_val_acc = min(val_loss_computer.avg_group_acc)
             else:
                 curr_val_acc = val_loss_computer.avg_acc
@@ -381,3 +389,14 @@ def train(
                     f"  {train_loss_computer.get_group_name(group_idx)}:\t"
                     f"adj = {train_loss_computer.adj[group_idx]:.3f}\n")
         logger.write("\n")
+
+
+def get_reps(model, dl):
+    temp_model = deepcopy(model)
+    temp_model.fc = nn.Identity()
+    results = []
+    with torch.no_grad():
+        for x, *_ in dl:
+            results.append(temp_model(x.cuda()))
+    
+    return torch.cat(results,dim=0)

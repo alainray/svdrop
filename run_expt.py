@@ -153,6 +153,9 @@ def main(args):
         dataset=args.dataset,
         log_dir=args.log_dir,
     )
+
+    if args.sv_dropout > 0.0:
+        model.fc.set_n_dirs(1000) # Limit number of singular vectors to consider
     if args.wandb:
         wandb.watch(model)
 
@@ -249,6 +252,7 @@ if __name__ == "__main__":
                         choices=["erm", "reweight", "group_dro", "joint_dro"])
     parser.add_argument("--alpha", type=float, default=0.2)
     parser.add_argument("--generalization_adjustment", default="0.0")
+    parser.add_argument("--sv_dropout", type=float, required=False, default=0.0)
     parser.add_argument("--automatic_adjustment",
                         default=False,
                         action="store_true")
