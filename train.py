@@ -361,11 +361,11 @@ def train(
                 val_loss)  # scheduler step to update lr at the end of epoch
 
         if epoch % args.save_step == 0:
-            torch.save(model, os.path.join(args.log_dir,
+            torch.save(model.state_dict(), os.path.join(args.log_dir,
                                            "%d_model.pth" % epoch))
 
         if args.save_last:
-            torch.save(model, os.path.join(args.log_dir, "last_model.pth"))
+            torch.save(model.state_dict(), os.path.join(args.log_dir, "last_model.pth"))
 
         if args.save_best:
             if args.loss_type in ["group_dro","reweight"] or args.reweight_groups:
@@ -375,7 +375,7 @@ def train(
             logger.write(f"Current validation accuracy: {curr_val_acc}\n")
             if curr_val_acc > best_val_acc:
                 best_val_acc = curr_val_acc
-                torch.save(model, os.path.join(args.log_dir, "best_model.pth"))
+                torch.save(model.state_dict(), os.path.join(args.log_dir, "best_model.pth"))
                 logger.write(f"Best model saved at epoch {epoch}\n")
 
         if args.automatic_adjustment:
