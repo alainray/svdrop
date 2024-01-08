@@ -16,7 +16,7 @@ from data import folds
 from utils import set_seed, Logger, CSVBatchLogger, log_args, get_model, hinge_loss
 from train import train
 from data.folds import Subset, ConcatDataset
-
+from time import time
 
 def main(args):
     if args.wandb:
@@ -321,5 +321,8 @@ if __name__ == "__main__":
         print("\n" * 2
               + f"WARNING: You are using '{args.metadata_csv_name}' instead of the default 'metadata.csv'."
               + "\n" * 2)
-        
+
+    start_time = time()  
     main(args)
+    end_time = time()
+    print(f"Total experiment time: {end_time-start_time:.1f}s")

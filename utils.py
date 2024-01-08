@@ -162,7 +162,7 @@ def get_model(model, pretrained, resume, n_classes, dataset, log_dir):
     elif model == "resnet50":
         model = torchvision.models.resnet50(pretrained=pretrained)
         d = model.fc.in_features
-        model.fc = nn.SVDropClassifier(d, n_classes)
+        model.fc = SVDropClassifier(d, n_classes)
     elif model == "resnet34":
         model = torchvision.models.resnet34(pretrained=pretrained)
         d = model.fc.in_features
