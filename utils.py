@@ -145,19 +145,9 @@ def hinge_loss(yhat, y):
 
 
 def get_model(model, pretrained, resume, n_classes, dataset, log_dir):
-    if resume:
-        model = torch.load(os.path.join(log_dir, "last_model.pth"))
-        d = train_data.input_size()[0]
-    elif model_attributes[model]["feature_type"] in (
-            "precomputed",
-            "raw_flattened",
-    ):
-        assert pretrained
-        # Load precomputed features
-        d = train_data.input_size()[0]
-        model = nn.Linear(d, n_classes)
-        model.has_aux_logits = False
-    elif model == "scnn":
+
+
+    if model == "scnn":
         model = SimpleCNN([32,64,128],1,num_classes=n_classes, add_pooling=False)
     elif model == "resnet50":
         model = torchvision.models.resnet50(pretrained=pretrained)
@@ -195,6 +185,9 @@ def get_model(model, pretrained, resume, n_classes, dataset, log_dir):
             print(f'n_classes = {n_classes}')
         else: 
             raise NotImplementedError
+    if resume:
+        weights = torch.load(os.path.join(log_dir, "last_model.pth"))
+        model.load_state_dict(weights)
     else:
         raise ValueError(f"{model} Model not recognized.")
 

@@ -251,20 +251,23 @@ def train(
         else:
             scheduler = None
 
+
+    if args.sv_dropout > 0.0:
+        print("Dropping out first singular vector for this epoch!")
+        # get representations R
+        # calculate representations
+        R = get_reps(model, dataset["train_loader"])
+        # apply to model
+        model.fc.set_singular(R)
+        # dropout first dimension
+        model.fc.dropout_dim([0]) # dropout first singular vector!
+
     best_val_acc = 0
     for epoch in range(epoch_offset, epoch_offset + args.n_epochs):
         logger.write("\nEpoch [%d]:\n" % epoch)
         logger.write(f"Training:\n")
 
-        if args.sv_dropout > random():
-            print("Dropping out first singular vector for this epoch!")
-            # get representations R
-            # calculate representations
-            R = get_reps(model, dataset["train_loader"])
-            # apply to model
-            model.fc.set_singular(R)
-            # dropout first dimension
-            model.fc.dropout_dim([0]) # dropout first singular vector!
+
         run_epoch(
             epoch,
             model,
@@ -283,7 +286,7 @@ def train(
             wandb=wandb,
         )
 
-        model.fc.reset_singular() # Reset SV_DROP changes
+        #model.fc.reset_singular() # Reset SV_DROP changes
 
         logger.write(f"\nValidation:\n")
         val_loss_computer =  LossComputer(

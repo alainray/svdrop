@@ -152,7 +152,12 @@ def main(args):
         n_classes=train_data.n_classes,
         dataset=args.dataset,
         log_dir=args.log_dir,
+        finetune=args.finetune,
     )
+
+    if args.pretrained_path != "": # Start from pretrained model
+        weights = torch.load(pretrained_path)
+        torch.load_state_dict(weights)
 
     if args.sv_dropout > 0.0:
         model.fc.set_n_dirs(1000) # Limit number of singular vectors to consider
@@ -235,6 +240,7 @@ if __name__ == "__main__":
     parser.add_argument("--up_weight", type=int, default=0)
     # Resume?
     parser.add_argument("--resume", default=False, action="store_true")
+    parser.add_argument("--finetune", default=False, action="store_true")
     # Label shifts
     parser.add_argument("--minority_fraction", type=float)
     parser.add_argument("--imbalance_ratio", type=float)
@@ -271,6 +277,10 @@ if __name__ == "__main__":
                         default="resnet50")
     parser.add_argument("--train_from_scratch",
                         action="store_true",
+                        default=False)
+    parser.add_argument("--pretrained_path",
+                        type=str,
+                        default="",
                         default=False)
     # Optimization
     parser.add_argument("--n_epochs", type=int, default=4)
