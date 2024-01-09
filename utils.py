@@ -185,11 +185,13 @@ def get_model(model, pretrained, resume, n_classes, dataset, log_dir, finetune):
             print(f'n_classes = {n_classes}')
         else: 
             raise NotImplementedError
+    else:
+        raise ValueError(f"{model} Model not recognized.")
+        
     if resume:
         weights = torch.load(os.path.join(log_dir, "last_model.pth"))
         model.load_state_dict(weights)
-    else:
-        raise ValueError(f"{model} Model not recognized.")
+
 
     if finetune:
         # Freeze all layers
