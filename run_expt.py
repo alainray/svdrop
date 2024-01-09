@@ -19,6 +19,7 @@ from data.folds import Subset, ConcatDataset
 from time import time
 
 def main(args):
+    start = time()
     if args.wandb:
         wandb.init(project=f"{args.project_name}_{args.dataset}")
         wandb.config.update(args)
@@ -156,8 +157,9 @@ def main(args):
     )
 
     if args.pretrained_path != "": # Start from pretrained model
-        weights = torch.load(pretrained_path)
-        torch.load_state_dict(weights)
+        print(f"Loading pretrained model from: {args.pretrained_path}")
+        weights = torch.load(args.pretrained_path)
+        model.load_state_dict(weights)
 
     if args.sv_dropout > 0.0:
         model.fc.set_n_dirs(1000) # Limit number of singular vectors to consider
@@ -208,7 +210,8 @@ def main(args):
     train_csv_logger.close()
     val_csv_logger.close()
     test_csv_logger.close()
-
+    end = time()
+    print(f"Total Experiment Time: {end-start:.1f}s")
 
 def check_args(args):
     if args.shift_type == "confounder":
@@ -331,7 +334,4 @@ if __name__ == "__main__":
               + f"WARNING: You are using '{args.metadata_csv_name}' instead of the default 'metadata.csv'."
               + "\n" * 2)
 
-    start_time = time()  
     main(args)
-    end_time = time()
-    print(f"Total experiment time: {end_time-start_time:.1f}s")

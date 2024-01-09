@@ -199,7 +199,8 @@ def get_model(model, pretrained, resume, n_classes, dataset, log_dir, finetune):
             param.requires_grad = False
 
         # Unfreeze the classifier
-        model.fc.requires_grad = True
+        for param in model.fc.parameters():
+            param.requires_grad = True
 
     return model
 
