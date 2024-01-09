@@ -280,8 +280,7 @@ if __name__ == "__main__":
                         default=False)
     parser.add_argument("--pretrained_path",
                         type=str,
-                        default="",
-                        default=False)
+                        default="")
     # Optimization
     parser.add_argument("--n_epochs", type=int, default=4)
     parser.add_argument("--batch_size", type=int, default=32)
