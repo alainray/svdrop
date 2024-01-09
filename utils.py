@@ -144,7 +144,7 @@ def hinge_loss(yhat, y):
     return torch_loss(yhat[:, 1], yhat[:, 0], y)
 
 
-def get_model(model, pretrained, resume, n_classes, dataset, log_dir):
+def get_model(model, pretrained, resume, n_classes, dataset, log_dir, finetune):
 
 
     if model == "scnn":
@@ -190,6 +190,14 @@ def get_model(model, pretrained, resume, n_classes, dataset, log_dir):
         model.load_state_dict(weights)
     else:
         raise ValueError(f"{model} Model not recognized.")
+
+    if finetune:
+        # Freeze all layers
+        for param in model.parameters():
+            param.requires_grad = False
+
+        # Unfreeze the classifier
+        model.fc.requires_grad = True
 
     return model
 
