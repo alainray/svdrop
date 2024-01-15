@@ -11,17 +11,23 @@ def main(args):
 
     final_epoch = args.final_epoch
     dataset = args.dataset
-    
+    corr = float(args.exp_name.split("_")[-1])
     # CHANGE THESE FOLDERS
-    exp_name = args.exp_name
-    folder_name = args.folder_name
-    data_dir = f"results/{args.dataset}/{exp_name}/{folder_name}/model_outputs/"
+    exp_name = args.exp_name # method + corr
+    folder_name = args.folder_name # we'll use it for seed 
+    data_dir = f"results/{args.dataset}/{exp_name}/model_outputs_{folder_name}"
     if args.dataset == 'CelebA':
         metadata_path = "./celebA/data/metadata.csv"
+    elif args.dataset == "MNISTCIFAR":
+        # TODO: need to implement how to get metadata from MNISTCIFAR
+        metadata_path = f"../datasets/MNISTCIFAR/metadata_{corr}.csv"
+        pass
     elif args.dataset == 'MultiNLI':
         metadata_path = "./multinli/data/metadata.csv"
     elif args.dataset == 'CUB':
-        metadata_path = "./cub/data/waterbird_complete95_forest2water2/metadata.csv"
+        corr_dict = {0.0: 50, 0.25: 625, 0.5: 0.75, 0.75: 0.875, 0.9: 0.95}
+        # TODO: Implement so it can work with different levels of spuriousness
+        metadata_path = f"../datasets/waterbird_complete{corr_dict[corr]}_forest2water2/metadata.csv"
     elif args.dataset == "jigsaw":
         metadata_path = "./jigsaw/data/all_data_with_identities.csv"
     else: 
@@ -42,6 +48,8 @@ def main(args):
     merged_csv = original_train_df.join(train_df.set_index(f"indices_None_epoch_{final_epoch}_val"))
     if dataset == "CUB":
         merged_csv["spurious"] = merged_csv['y'] != merged_csv["place"]
+    elif dataset == "MNISTCIFAR":
+        merged_csv["spurious"] = merged_csv['y'] != merged_csv["mnist"]
     elif dataset == "CelebA":
         merged_csv = merged_csv.replace(-1, 0)
         assert 0 == np.sum(merged_csv[merged_csv["split"] == 0]["Blond_Hair"] != merged_csv[merged_csv["split"] == 0][f"y_true_None_epoch_{final_epoch}_val"])
@@ -91,7 +99,7 @@ def main(args):
         train_probs_df["probs_1"] = probs[:,1]
         if dataset == 'CelebA':
             train_probs_df["confidence"] = train_probs_df["Blond_Hair"] * train_probs_df["probs_1"] + (1 - train_probs_df["Blond_Hair"]) * train_probs_df["probs_0"]
-        elif dataset == 'CUB':
+        elif dataset in ['CUB','MNISTCIFAR']:
             train_probs_df["confidence"] = train_probs_df["y"] * train_probs_df["probs_1"] + (1 - train_probs_df["y"]) * train_probs_df["probs_0"]
         elif dataset == 'jigsaw':
             train_probs_df["confidence"] = (train_probs_df["toxicity"] >= 0.5) * train_probs_df["probs_1"] + (train_probs_df["toxicity"] < 0.5)  * train_probs_df["probs_0"]
@@ -101,12 +109,11 @@ def main(args):
         assert(np.sum(train_probs_df[f"confidence_thres{args.conf_threshold}"] != train_probs_df["wrong_1_times"]) == 0)
     
     # Save csv into new dir for the run, and generate downstream runs
-    if not os.path.exists(f"results/{dataset}/{exp_name}/train_downstream_{folder_name}/final_epoch{final_epoch}"):
-        os.makedirs(f"results/{dataset}/{exp_name}/train_downstream_{folder_name}/final_epoch{final_epoch}")
-    root = f"results/{dataset}/{exp_name}/train_downstream_{folder_name}/final_epoch{final_epoch}"
-
+    root = f"results/{dataset}/{exp_name}/model_outputs_{folder_name}/final_epoch_{final_epoch}"
+    if not os.path.exists(root):
+        os.makedirs(root)
     train_probs_df.to_csv(f"{root}/metadata_aug.csv")
-    root = f"{exp_name}/train_downstream_{folder_name}/final_epoch{final_epoch}"
+    
     
     sbatch_command = (
             f"python generate_downstream.py --exp_name {root} --lr {args.lr} --weight_decay {args.weight_decay} --method JTT --dataset {args.dataset} --aug_col {args.aug_col}" + (f" --batch_size {args.batch_size}" if args.batch_size else "")
