@@ -154,6 +154,7 @@ def main(args):
         dataset=args.dataset,
         log_dir=args.log_dir,
         finetune=args.finetune,
+        unfreeze = args.unfreeze,
     )
 
     if args.pretrained_path != "": # Start from pretrained model
@@ -244,6 +245,7 @@ if __name__ == "__main__":
     # Resume?
     parser.add_argument("--resume", default=False, action="store_true")
     parser.add_argument("--finetune", default=False, action="store_true")
+    parser.add_argument("--unfreeze", type=int,default=0) # unfreeze layers from x onward in resnet50
     # Label shifts
     parser.add_argument("--minority_fraction", type=float)
     parser.add_argument("--imbalance_ratio", type=float)

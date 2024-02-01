@@ -144,9 +144,9 @@ def hinge_loss(yhat, y):
     return torch_loss(yhat[:, 1], yhat[:, 0], y)
 
 
-def get_model(model, pretrained, resume, n_classes, dataset, log_dir, finetune):
+def get_model(model, pretrained, resume, n_classes, dataset, log_dir, finetune, unfreeze):
 
-
+    model_name = model
     if model == "scnn":
         model = SimpleCNN([32,64,128],1,num_classes=n_classes, add_pooling=False)
     elif model == "resnet50":
@@ -192,16 +192,26 @@ def get_model(model, pretrained, resume, n_classes, dataset, log_dir, finetune):
         weights = torch.load(os.path.join(log_dir, "last_model.pth"))
         model.load_state_dict(weights)
 
-
     if finetune:
         # Freeze all layers
         for param in model.parameters():
             param.requires_grad = False
 
+        if model_name == "resnet50" and unfreeze>0: 
+            # unfreeze x blocks from the end, if args.unfreeze = 1, it means to unfreeze from layers 1 onwards, 3 would mean unfreeze layer 3 only
+            for layer_number in range(unfreeze, 5):
+                layer_name = f"layer{layer_number}"
+                module = getattr(model, layer_name, None)
+                for name, param in module.named_parameters():
+                    print(f"activating {name}")
+                    param.requires_grad = True
+
         # Unfreeze the classifier
         for param in model.fc.parameters():
             param.requires_grad = True
 
+    for name, param in model.named_parameters():
+        print(name, param.requires_grad)
     return model
 
 
