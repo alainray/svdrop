@@ -11,7 +11,7 @@ def main(args):
 
     final_epoch = args.final_epoch
     dataset = args.dataset
-    corr = float(args.exp_name.split("_")[-1])
+    corr = str(args.exp_name.split("_")[-1])
     # CHANGE THESE FOLDERS
     exp_name = args.exp_name # method + corr
     folder_name = args.folder_name # we'll use it for seed 
@@ -26,8 +26,7 @@ def main(args):
         metadata_path = "./multinli/data/metadata.csv"
     elif args.dataset == 'CUB':
         corr_dict = {0.0: 50, 0.25: 625, 0.5: 0.75, 0.75: 0.875, 0.9: 0.95}
-        # TODO: Implement so it can work with different levels of spuriousness
-        metadata_path = f"../datasets/waterbird_complete{corr_dict[corr]}_forest2water2/metadata.csv"
+        metadata_path = f"../datasets/waterbird_complete{str(corr)}_forest2water2/metadata.csv"
     elif args.dataset == "jigsaw":
         metadata_path = "./jigsaw/data/all_data_with_identities.csv"
     else: 
