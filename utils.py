@@ -144,6 +144,18 @@ def hinge_loss(yhat, y):
     return torch_loss(yhat[:, 1], yhat[:, 0], y)
 
 
+def update_state_dict(old, new, layers=["layer4"]):
+    # old and new must have same keys
+    keys1 = set(old.keys())
+    keys2 = set(old.keys())
+    assert keys1 == keys2, "Dictionaries do not have the same keys"
+    results = {k:v for k,v in old.items()}
+    for k, v in new.items():
+        for layer in layers:
+            if layer in k:
+                results[k] = v # update with new value
+    return results
+
 def get_model(model, pretrained, resume, n_classes, dataset, log_dir, finetune, unfreeze):
 
     model_name = model

@@ -13,7 +13,7 @@ from models import model_attributes
 from data.data import dataset_attributes, shift_types, prepare_data, log_data
 from data import dro_dataset
 from data import folds
-from utils import set_seed, Logger, CSVBatchLogger, log_args, get_model, hinge_loss
+from utils import set_seed, Logger, CSVBatchLogger, log_args, get_model, hinge_loss, update_state_dict
 from train import train
 from data.folds import Subset, ConcatDataset
 from time import time
@@ -160,6 +160,10 @@ def main(args):
     if args.pretrained_path != "": # Start from pretrained model
         print(f"Loading pretrained model from: {args.pretrained_path}")
         weights = torch.load(args.pretrained_path)
+        if args.restart_layers > 0:
+            old_sd = model.state_dict()
+            layers = [f"layer{i+1}" for i in range(args.restart_layers)] # which layers to reinitialize
+            weights = update_state_dict(old_sd, weights, layers = layers)
         model.load_state_dict(weights)
 
     if args.sv_dropout > 0.0:
@@ -246,6 +250,7 @@ if __name__ == "__main__":
     parser.add_argument("--resume", default=False, action="store_true")
     parser.add_argument("--finetune", default=False, action="store_true")
     parser.add_argument("--unfreeze", type=int,default=0) # unfreeze layers from x onward in resnet50
+    parser.add_argument("--restart_layers", type=int,default=0) # restart layers from x onward in resnet50
     # Label shifts
     parser.add_argument("--minority_fraction", type=float)
     parser.add_argument("--imbalance_ratio", type=float)
