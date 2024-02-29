@@ -7,11 +7,13 @@ from torch.nn.parameter import Parameter
 import torch
 import torch.nn as nn
 import torchvision
+from torchvision.transforms import Normalize
 from models import model_attributes
 from torch import Tensor
 import torch.nn.init as init
 import math
 from torch.nn import functional as F
+from torch.nn import Sequential
 from random import randint, random
 
 class Logger(object):
@@ -156,7 +158,7 @@ def update_state_dict(old, new, layers=["layer4"]):
                 results[k] = v # update with new value
     return results
 
-def get_model(model, pretrained, resume, n_classes, dataset, log_dir, finetune, unfreeze):
+def get_model(model, pretrained, resume, n_classes, dataset, log_dir, finetune, unfreeze, normalize):
 
     model_name = model
     if model == "scnn":
@@ -164,7 +166,12 @@ def get_model(model, pretrained, resume, n_classes, dataset, log_dir, finetune, 
     elif model == "resnet50":
         model = torchvision.models.resnet50(pretrained=pretrained)
         d = model.fc.in_features
-        model.fc = SVDropClassifier(d, n_classes)
+        if normalize: # normalize features
+            norm = Normalize([0.0,0.0,0.0], [1.0, 1.0, 1.0])
+            seq = Sequential(norm, SVDropClassifier(d, n_classes))
+            model.fc = seq
+        else:
+            model.fc = SVDropClassifier(d, n_classes)
     elif model == "resnet34":
         model = torchvision.models.resnet34(pretrained=pretrained)
         d = model.fc.in_features
