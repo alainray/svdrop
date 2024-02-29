@@ -107,6 +107,14 @@ def run_epoch(
                 output_df[f"pred_prob_{run_name}_{class_ind}"] = probs[:, class_ind]
 
             loss_main = loss_computer.loss(outputs, y, g, is_training)
+            # 
+            if args.l1 > 0:
+                l1_loss = 0
+                for param in model.parameters():
+                    l1_loss += torch.norm(param, p=1)
+        
+                # Add L1 regularization term to the original loss
+                loss_main += args.l1 * l1_loss
 
             if is_training:
                 if (args.model.startswith("bert") and args.use_bert_params): 
