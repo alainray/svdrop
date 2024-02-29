@@ -156,16 +156,11 @@ def main(args):
         finetune=args.finetune,
         unfreeze = args.unfreeze,
         normalize = args.normalize,
+        from_file = args.pretrained_path,
+        restart_layers=args.restart_layers,
     )
 
-    if args.pretrained_path != "": # Start from pretrained model
-        print(f"Loading pretrained model from: {args.pretrained_path}")
-        weights = torch.load(args.pretrained_path)
-        if args.restart_layers > 0:
-            old_sd = model.state_dict()
-            layers = [f"layer{i+1}" for i in range(args.restart_layers)] # which layers to reinitialize
-            weights = update_state_dict(old_sd, weights, layers = layers)
-        model.load_state_dict(weights)
+
 
     if args.sv_dropout > 0.0:
         model.fc.set_n_dirs(1000) # Limit number of singular vectors to consider

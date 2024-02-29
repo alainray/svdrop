@@ -7,7 +7,6 @@ from torch.nn.parameter import Parameter
 import torch
 import torch.nn as nn
 import torchvision
-from torchvision.transforms import Normalize
 from models import model_attributes
 from torch import Tensor
 import torch.nn.init as init
@@ -84,6 +83,18 @@ class CSVBatchLogger:
         self.file.close()
 
 
+
+class Normalize01(nn.Module):
+    def __init__(self):
+        super(Normalize01, self).__init__()
+
+    def forward(self, x):
+        # Subtract mean and divide by standard deviation
+        mean = x.mean(dim=1).unsqueeze(1)
+        std = x.std(dim=1).unsqueeze(1)
+        return (x - mean)/std
+t = 40 + 10*torch.randn(100,5)
+
 class AverageMeter(object):
     """Computes and stores the average and current value"""
     def __init__(self):
@@ -158,7 +169,7 @@ def update_state_dict(old, new, layers=["layer4"]):
                 results[k] = v # update with new value
     return results
 
-def get_model(model, pretrained, resume, n_classes, dataset, log_dir, finetune, unfreeze, normalize):
+def get_model(model, pretrained, resume, n_classes, dataset, log_dir, finetune, unfreeze, normalize, from_file, restart_layers):
 
     model_name = model
     if model == "scnn":
@@ -166,12 +177,7 @@ def get_model(model, pretrained, resume, n_classes, dataset, log_dir, finetune, 
     elif model == "resnet50":
         model = torchvision.models.resnet50(pretrained=pretrained)
         d = model.fc.in_features
-        if normalize: # normalize features
-            norm = Normalize([0.0,0.0,0.0], [1.0, 1.0, 1.0])
-            seq = Sequential(norm, SVDropClassifier(d, n_classes))
-            model.fc = seq
-        else:
-            model.fc = SVDropClassifier(d, n_classes)
+        model.fc = SVDropClassifier(d, n_classes)
     elif model == "resnet34":
         model = torchvision.models.resnet34(pretrained=pretrained)
         d = model.fc.in_features
@@ -206,10 +212,23 @@ def get_model(model, pretrained, resume, n_classes, dataset, log_dir, finetune, 
             raise NotImplementedError
     else:
         raise ValueError(f"{model} Model not recognized.")
-        
+    
+    if from_file != "": # Start from pretrained model
+        print(f"Loading pretrained model from: {from_file}")
+        weights = torch.load(from_file)
+        if restart_layers > 0:
+            old_sd = model.state_dict()
+            layers = [f"layer{i+1}" for i in range(restart_layers)] # which layers to reinitialize
+            weights = update_state_dict(old_sd, weights, layers = layers)
+        model.load_state_dict(weights)
     if resume:
         weights = torch.load(os.path.join(log_dir, "last_model.pth"))
         model.load_state_dict(weights)
+
+    if normalize: # normalize features
+        norm = Normalize01()
+        seq = Sequential(norm, SVDropClassifier(d, n_classes))
+        model.fc = seq
 
     if finetune:
         # Freeze all layers
