@@ -23,7 +23,8 @@ class CelebADataset(ConfounderDataset):
         augment_data,
         metadata_csv_name="metadata.csv",
     ):
-        self.root_dir = os.path.join(root_dir, "celebA") #root_dir
+        #self.root_dir = os.path.join(root_dir, "celebA") #root_dir
+        self.root_dir = root_dir
         self.target_name = target_name
         self.confounder_names = confounder_names
         self.augment_data = augment_data
@@ -31,10 +32,10 @@ class CelebADataset(ConfounderDataset):
 
         # Read in attributes
         self.attrs_df = pd.read_csv(
-            os.path.join(self.root_dir, "data", metadata_csv_name))
+            os.path.join(self.root_dir, "celeba", metadata_csv_name))
 
         # Split out filenames and attribute names
-        self.data_dir = os.path.join(self.root_dir, "data", "img_align_celeba")
+        self.data_dir = os.path.join(self.root_dir, "celeba", "img_align_celeba")
         self.filename_array = self.attrs_df["image_id"].values
         self.attrs_df = self.attrs_df.drop(labels="image_id", axis="columns")
         self.attr_names = self.attrs_df.columns.copy()
@@ -54,7 +55,7 @@ class CelebADataset(ConfounderDataset):
         self.n_confounders = len(self.confounder_idx)
         confounders = self.attrs_df[:, self.confounder_idx]
         self.confounder_array = np.matmul(
-            confounders.astype(np.int),
+            confounders.astype(int),
             np.power(2, np.arange(len(self.confounder_idx))))
 
         # Map to groups
@@ -64,8 +65,8 @@ class CelebADataset(ConfounderDataset):
 
         # Read in train/val/test splits
         self.split_df = pd.read_csv(
-            os.path.join(self.root_dir, "data", metadata_csv_name))
-        self.split_array = self.split_df["split"].values
+            os.path.join(self.root_dir, "celeba", "list_eval_partition.csv"))
+        self.split_array = self.split_df["partition"].values
         self.split_dict = {
             "train": 0,
             "val": 1,
