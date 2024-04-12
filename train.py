@@ -39,12 +39,15 @@ def run_epoch(
     scheduler is only used inside this function if model is bert.
     """
 
-    
-    
+
+    NUM_ACCUMULATION_STEPS = args.accum
+
     if is_training:
         model.train()
         if (args.model.startswith("bert") and args.use_bert_params): # or (args.model == "bert"):
             model.zero_grad()
+        optimizer.zero_grad()
+            
         
     else:
         model.eval()
@@ -125,9 +128,12 @@ def run_epoch(
                     optimizer.step()
                     model.zero_grad()
                 else:
-                    optimizer.zero_grad()
+                    loss_main /= NUM_ACCUMULATION_STEPS
                     loss_main.backward()
-                    optimizer.step()
+                    if ((batch_idx + 1) % NUM_ACCUMULATION_STEPS == 0) or (batch_idx + 1 == len(prog_bar_loader)):
+                        optimizer.step()
+                        optimizer.zero_grad()
+
 
             if is_training and (batch_idx + 1) % log_every == 0:
                 run_stats = loss_computer.get_stats(model, args)

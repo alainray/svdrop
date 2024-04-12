@@ -300,6 +300,7 @@ if __name__ == "__main__":
     parser.add_argument("--minimum_variational_weight", type=float, default=0)
     # Misc
     parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--accum", type=int, default=1)
     parser.add_argument("--show_progress", default=False, action="store_true")
     parser.add_argument("--log_dir", default="./logs")
     parser.add_argument("--log_every", default=50, type=int)
