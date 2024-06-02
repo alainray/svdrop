@@ -149,8 +149,18 @@ def run_epoch(
                     wandb_stats["epoch"] = epoch
                     wandb_stats["batch_idx"] = batch_idx
                     wandb.log(wandb_stats)
-
-        if run_name is not None:
+        if is_training and args.recalculate_groups:
+            new_g = (acc_y_pred == acc_y_true)*2 + acc_y_true
+            # Change train dataset
+            dst_indices = loader.dataset.dataset.indices
+            index_order = {j:i for i, j in enumerate(dst_indices)}
+            new_indices = [index_order[i] for i in indices]
+            # recalculate groups in train dataset
+            loader.dataset._group_array[new_indices] = torch.from_numpy(new_g).long()
+            loader.dataset._group_counts = ((torch.arange(
+            loader.dataset.n_groups).unsqueeze(1) == loader.dataset._group_array).sum(1).float())
+        if False:
+        #if run_name is not None:
             save_dir = "/".join(csv_logger.path.split("/")[:-1])
             output_df.to_csv(
                 os.path.join(save_dir, 
@@ -277,6 +287,13 @@ def train(
         model.fc.dropout_dim([0]) # dropout first singular vector!
 
     best_val_acc = 0
+
+    if args.recalculate_groups:
+        # recalculate groups for first epoch, groups = class!
+        dataset['train_loader'].dataset._group_array = dataset['train_loader'].dataset._y_array
+        dataset['train_loader'].dataset._group_counts = ((torch.arange(
+        dataset['train_loader'].dataset.n_groups).unsqueeze(1) == dataset['train_loader'].dataset._group_array).sum(1).float())
+
     for epoch in range(epoch_offset, epoch_offset + args.n_epochs):
         logger.write("\nEpoch [%d]:\n" % epoch)
         logger.write(f"Training:\n")
@@ -377,7 +394,8 @@ def train(
             scheduler.step(
                 val_loss)  # scheduler step to update lr at the end of epoch
 
-        if epoch % args.save_step == 0:
+        if False:
+        #if epoch % args.save_step == 0:
             torch.save(model.state_dict(), os.path.join(args.log_dir,
                                            "%d_model.pth" % epoch))
 

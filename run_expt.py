@@ -246,6 +246,7 @@ if __name__ == "__main__":
     parser.add_argument("--resume", default=False, action="store_true")
     parser.add_argument("--finetune", default=False, action="store_true")
     parser.add_argument("--normalize", default=False, action="store_true") # normalize features to 0 mean, 1 std
+    parser.add_argument("--recalculate_groups", default=False, action="store_true") # calculate groups after each epoch based on correctness
     parser.add_argument("--unfreeze", type=int,default=0) # unfreeze layers from x onward in resnet50
     parser.add_argument("--restart_layers", type=int,default=0) # restart layers from x onward in resnet50
 
