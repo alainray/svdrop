@@ -188,9 +188,7 @@ def get_model(model, pretrained, resume, n_classes, dataset, log_dir, finetune, 
         model.fc = nn.Linear(d, n_classes)
     elif model.startswith('bert'):
         if dataset == "MultiNLI":
-            
             assert dataset == "MultiNLI"
-
             from pytorch_transformers import BertConfig, BertForSequenceClassification
 
             config_class = BertConfig
@@ -212,7 +210,7 @@ def get_model(model, pretrained, resume, n_classes, dataset, log_dir, finetune, 
             raise NotImplementedError
     else:
         raise ValueError(f"{model} Model not recognized.")
-    
+    print("D")
     if from_file != "": # Start from pretrained model
         print(f"Loading pretrained model from: {from_file}")
         weights = torch.load(from_file)
@@ -247,7 +245,7 @@ def get_model(model, pretrained, resume, n_classes, dataset, log_dir, finetune, 
         # Unfreeze the classifier
         for param in model.fc.parameters():
             param.requires_grad = True
-
+    print("E")
     for name, param in model.named_parameters():
         print(name, param.requires_grad)
     return model

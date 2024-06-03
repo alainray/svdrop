@@ -144,7 +144,8 @@ def main(args):
     n_classes = train_data.n_classes
 
     log_data(data, logger)
-
+    
+    print("Training")
     ## Initialize model
     model = get_model(
         model=args.model,
@@ -194,6 +195,7 @@ def main(args):
     test_csv_logger = CSVBatchLogger(os.path.join(args.log_dir, f"test.csv"),
                                      test_data.n_groups,
                                      mode=mode)
+
     train(
         model,
         criterion,
