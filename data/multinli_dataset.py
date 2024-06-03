@@ -29,7 +29,7 @@ class MultiNLIDataset(ConfounderDataset):
         model_type=None,
         metadata_csv_name="metadata.csv",
     ):
-        self.root_dir = './' 
+        self.root_dir = root_dir 
         
         self.target_name = target_name
         self.confounder_names = confounder_names
@@ -43,8 +43,7 @@ class MultiNLIDataset(ConfounderDataset):
         assert model_type == "bert"
 
         self.data_dir = os.path.join(self.root_dir, "multinli", "data")
-        self.glue_dir = os.path.join(self.root_dir, "multinli", "glue_data",
-                                     "MNLI")
+        self.glue_dir = os.path.join(self.root_dir, "multinli", "glue_data")
         if not os.path.exists(self.data_dir):
             raise ValueError(
                 f"{self.data_dir} does not exist yet. Please generate the dataset first."
