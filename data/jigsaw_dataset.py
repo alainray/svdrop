@@ -42,13 +42,15 @@ class JigsawDataset(ConfounderDataset):
             self.max_length = 220
         elif batch_size == 16:
             self.max_length = 300
+        elif batch_size == 8:
+            self.max_length = 128
         else:
             assert False, "Invalid batch size"
 
         assert self.augment_data == False
         assert self.model in ["bert-base-cased", "bert-base-uncased"]
         
-        self.data_dir = os.path.join(self.root_dir, "data")
+        self.data_dir = os.path.join(self.root_dir, "civilcomments/data")
         if not os.path.exists(self.data_dir):
             raise ValueError(
                 f"{self.data_dir} does not exist yet. Please generate the dataset first."
