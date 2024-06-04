@@ -7,7 +7,7 @@ import torch.nn.functional as F
 from random import random
 import numpy as np
 from tqdm import tqdm
-
+from data import dro_dataset
 from utils import AverageMeter, accuracy
 from loss import LossComputer
 
@@ -38,8 +38,6 @@ def run_epoch(
     """
     scheduler is only used inside this function if model is bert.
     """
-
-
     NUM_ACCUMULATION_STEPS = args.accum
 
     if is_training:
@@ -65,7 +63,6 @@ def run_epoch(
             y = batch[1]
             g = batch[2]
             data_idx = batch[3]
-            
             if args.model.startswith("bert"):
                 input_ids = x[:, :, 0]
                 input_masks = x[:, :, 1]
@@ -150,15 +147,9 @@ def run_epoch(
                     wandb_stats["batch_idx"] = batch_idx
                     wandb.log(wandb_stats)
         if is_training and args.recalculate_groups:
-            new_g = (acc_y_pred == acc_y_true)*2 + acc_y_true
-            # Change train dataset
-            dst_indices = loader.dataset.dataset.indices
-            index_order = {j:i for i, j in enumerate(dst_indices)}
-            new_indices = [index_order[i] for i in indices]
-            # recalculate groups in train dataset
-            loader.dataset._group_array[new_indices] = torch.from_numpy(new_g).long()
-            loader.dataset._group_counts = ((torch.arange(
-            loader.dataset.n_groups).unsqueeze(1) == loader.dataset._group_array).sum(1).float())
+            args.indices = indices
+            args.new_g = (acc_y_pred == acc_y_true)*2 + acc_y_true
+
         if False:
         #if run_name is not None:
             save_dir = "/".join(csv_logger.path.split("/")[:-1])
@@ -210,6 +201,23 @@ def train(
         adjustments = np.array(adjustments * dataset["train_data"].n_groups)
     else:
         adjustments = np.array(adjustments)
+
+    if args.recalculate_groups:
+        # recreate dataset
+        train_data = dataset['train_data']
+        new_g = torch.tensor(train_data._y_array)
+        train_data.update_groups(None, new_g)
+        loader_kwargs = {
+            "batch_size": args.batch_size,
+            "num_workers": 4,
+            "pin_memory": True,
+        }
+        # recreate train DataLoader
+        dataset["train_loader"] = dro_dataset.get_loader(train_data,
+                                          train=True,
+                                          reweight_groups=args.reweight_groups,
+                                          **loader_kwargs)
+
 
     train_loss_computer = LossComputer(
         criterion,
@@ -288,17 +296,15 @@ def train(
 
     best_val_acc = 0
 
-    if args.recalculate_groups:
-        # recalculate groups for first epoch, groups = class!
-        dataset['train_loader'].dataset._group_array = dataset['train_loader'].dataset._y_array
-        dataset['train_loader'].dataset._group_counts = ((torch.arange(
-        dataset['train_loader'].dataset.n_groups).unsqueeze(1) == dataset['train_loader'].dataset._group_array).sum(1).float())
 
     for epoch in range(epoch_offset, epoch_offset + args.n_epochs):
         logger.write("\nEpoch [%d]:\n" % epoch)
         logger.write(f"Training:\n")
 
-
+        #print("DESPUESDESPUES", dataset["train_loader"].dataset._group_array[:5])
+        #print(type(dataset["train_loader"].dataset))
+        #print(type(dataset["train_loader"].dataset.dataset))
+        #print("DESPUESDESPUES", dataset["train_loader"].dataset.dataset.group_array[:5])
         run_epoch(
             epoch,
             model,
@@ -316,6 +322,27 @@ def train(
             wandb_group="train",
             wandb=wandb,
         )
+        if args.recalculate_groups:
+            # recreate train dataset with new groups
+            dataset['train_data'].update_groups(args.indices, args.new_g)
+            # recreate train DataLoader
+            dataset['train_loader'] = dro_dataset.get_loader(dataset['train_data'],
+                                            train=True,
+                                            reweight_groups=args.reweight_groups,
+                                                **loader_kwargs)
+            train_loss_computer = LossComputer(
+            criterion,
+            loss_type=args.loss_type,
+            dataset=dataset["train_data"],
+            alpha=args.alpha,
+            gamma=args.gamma,
+            adj=adjustments,
+            step_size=args.robust_step_size,
+            normalize_loss=args.use_normalized_loss,
+            btl=args.btl,
+            min_var_weight=args.minimum_variational_weight,
+            joint_dro_alpha=args.joint_dro_alpha,
+    )
 
         #model.fc.reset_singular() # Reset SV_DROP changes
 

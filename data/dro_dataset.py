@@ -3,7 +3,7 @@ from tqdm import tqdm
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
 from torch.utils.data.sampler import WeightedRandomSampler
-
+from data.folds import Subset
 
 class DRODataset(Dataset):
     def __init__(self, dataset, process_item_fn, n_groups, n_classes,
@@ -21,6 +21,8 @@ class DRODataset(Dataset):
 
         self._group_array = torch.LongTensor(group_array)
         self._y_array = torch.LongTensor(y_array)
+        #print("G1",torch.arange(self.n_groups).unsqueeze(1) )
+        #print("G1",self._group_array)
         self._group_counts = ((torch.arange(
             self.n_groups).unsqueeze(1) == self._group_array).sum(1).float())
 
@@ -57,7 +59,22 @@ class DRODataset(Dataset):
     def input_size(self):
         for x, y, g, _ in self:
             return x.size()
-
+        
+    def update_groups(self, indices, new_g):
+        #print("indices", indices[:5])
+        #print("new_g", new_g[:5])
+        if isinstance(self.dataset, Subset):
+            if indices is None: # assume we need to use indices from subset
+                indices = self.dataset.indices
+            self.dataset.dataset.update_groups(indices, new_g)
+        else:
+            if indices is None: # assume we need to use indices from subset
+                indices = torch.tensor(list(range(len(self.dataset))))
+            self.dataset.update_groups(indices, new_g)
+        # update self with new group counts
+        self._group_array = torch.LongTensor(self.get_group_array())
+        #print("DRO", self._group_array[:5])
+        self._group_counts = ((torch.arange(self.n_groups).unsqueeze(1) == self._group_array).sum(1).float())
 
 def get_loader(dataset, train, reweight_groups, **kwargs):
     if not train:  # Validation or testing

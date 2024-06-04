@@ -34,8 +34,11 @@ class Subset(torch.utils.data.Dataset):
         """Return an array [g_x1, g_x2, ...]"""
         # setting re_evaluate=False helps us over-write the group array if necessary (2-group DRO)
         if re_evaluate:
+            #print("Subset indices", self.indices[:5])
+            #print("Tipo2",type(self.dataset.get_group_array()[self.indices]))
             group_array = self.dataset.get_group_array()[self.indices]        
             assert len(group_array) == len(self)
+            #print("SUBSET",group_array[:5])
             return group_array
         else:
             return self.group_array

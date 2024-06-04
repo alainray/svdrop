@@ -19,8 +19,10 @@ class ConfounderDataset(Dataset):
         augment_data=None,
     ):
         raise NotImplementedError
-
+    def update_groups(self, indices, new_g):
+        self.group_array[indices] = new_g
     def get_group_array(self):
+
         return self.group_array
 
     def get_label_array(self):
