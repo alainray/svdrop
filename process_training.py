@@ -17,7 +17,7 @@ def main(args):
     folder_name = args.folder_name # we'll use it for seed 
     data_dir = f"results/{args.dataset}/{exp_name}/model_outputs_{folder_name}"
     if args.dataset == 'CelebA':
-        metadata_path = "./celebA/data/metadata.csv"
+        metadata_path = "../datasets/celeba/metadata.csv"
     elif args.dataset == "MNISTCIFAR":
         # TODO: need to implement how to get metadata from MNISTCIFAR
         metadata_path = f"../datasets/MNISTCIFAR/metadata_{corr}.csv"
