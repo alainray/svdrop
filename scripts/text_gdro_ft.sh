@@ -41,7 +41,7 @@ ROOT=/workspace1/asoto/araymond/svdrop
 PYTHON=~/pyenv/versions/mini/bin/python3
 cd "$ROOT"
 
-DATASET="${1:?uso: sbatch scripts/text_gdro_ft.sh {MultiNLI|civilcomments}}"
+DATASET="${1:?falta el dataset: MultiNLI o civilcomments}"
 BUDGETS=(5 100)
 EPOCHS="${BUDGETS[${SLURM_ARRAY_TASK_ID:-0}]}"
 
