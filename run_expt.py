@@ -14,6 +14,7 @@ from data.data import dataset_attributes, shift_types, prepare_data, log_data
 from data import dro_dataset
 from data import folds
 from utils import set_seed, Logger, CSVBatchLogger, log_args, get_model, hinge_loss, update_state_dict, freeze_bn_stats
+from feature_cache import build_cached_data
 from train import train
 from data.folds import Subset, ConcatDataset
 from time import time
@@ -114,7 +115,7 @@ def main(args):
 
     loader_kwargs = {
         "batch_size": args.batch_size,
-        "num_workers": 0,
+        "num_workers": args.num_workers,
         "pin_memory": True,
     }
     train_loader = dro_dataset.get_loader(train_data,
@@ -164,6 +165,11 @@ def main(args):
     if args.finetune and not args.train_bn:
         n_frozen = freeze_bn_stats(model)
         logger.write(f"Normalization layers kept in eval mode: {n_frozen}\n")
+
+    if args.cache_features:
+        data, model = build_cached_data(model, data, args, logger,
+                                        torch.device("cuda"))
+        n_classes = data["train_data"].n_classes
 
     if args.sv_dropout > 0.0:
         model.fc.set_n_dirs(1000) # Limit number of singular vectors to consider
@@ -254,6 +260,10 @@ if __name__ == "__main__":
     # --train_bn for the old behaviour, which is what every run made before this
     # flag existed used. See NAMING.md.
     parser.add_argument("--train_bn", default=False, action="store_true")
+    # Precompute the frozen backbone's output once instead of every epoch. Only
+    # valid when the backbone really is fixed; see feature_cache.py.
+    parser.add_argument("--cache_features", default=False, action="store_true")
+    parser.add_argument("--num_workers", type=int, default=4)
     parser.add_argument("--normalize", default=False, action="store_true") # normalize features to 0 mean, 1 std
     parser.add_argument("--recalculate_groups", default=False, action="store_true") # calculate groups after each epoch based on correctness
     parser.add_argument("--unfreeze", type=int,default=0) # unfreeze layers from x onward in resnet50
