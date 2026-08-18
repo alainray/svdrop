@@ -40,6 +40,7 @@ Remaining keys, in this order (omit any that does not apply):
 | `ep` | `301`, ... | number of epochs |
 | `bn` | `train`, `eval` | BatchNorm mode of the frozen backbone (see below) |
 | `unfreeze`, `restart` | integers | only when non-zero |
+| `feat` | `oldgen`, ... | only when the frozen backbone comes from a different instantiation of the dataset than the head is trained on |
 
 Examples:
 
