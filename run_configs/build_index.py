@@ -102,7 +102,23 @@ def fmt(v):
     if f == 0:
         return "0"
     s = f"{f:g}"
+    if "e" not in s and "." not in s:
+        s += ".0"  # keep frac-1.0 / wd-1.0 rather than frac-1 / wd-1
     return s.replace("e-0", "e-").replace("e+0", "e")
+
+
+def bn_mode(a):
+    """BatchNorm mode of the frozen part during last-layer retraining.
+
+    run_epoch always calls model.train(), so every run made before --train_bn
+    existed kept adapting BatchNorm statistics; those dumps have no "Train bn"
+    key at all. End-to-end runs train BN legitimately, so the axis is n/a.
+    """
+    if not is_true(a.get("Finetune")):
+        return "n/a"
+    if "Train bn" not in a:
+        return "train"
+    return "train" if is_true(a["Train bn"]) else "eval"
 
 
 def canonical_name(a, dataset, run):
@@ -114,9 +130,8 @@ def canonical_name(a, dataset, run):
     fields.append(f"wd-{fmt(a.get('Weight decay', 0))}")
     fields.append(f"lr-{fmt(a.get('Lr', 0))}")
     fields.append(f"ep-{a.get('N epochs', '?')}")
-    # BatchNorm mode is only recorded by runs made after the freeze_bn fix; every
-    # earlier run trained BN statistics because run_epoch always calls model.train().
-    fields.append(f"bn-{'eval' if is_true(a.get('Freeze bn')) else 'train'}")
+    if bn_mode(a) != "n/a":
+        fields.append(f"bn-{bn_mode(a)}")
     unfreeze = a.get("Unfreeze", "0") or "0"
     if unfreeze not in ("0", ""):
         fields.append(f"unfreeze-{unfreeze}")
@@ -156,7 +171,7 @@ def main():
             "lr": a.get("Lr", ""),
             "n_epochs": a.get("N epochs", ""),
             "batch_size": a.get("Batch size", ""),
-            "bn": "eval" if is_true(a.get("Freeze bn")) else "train",
+            "bn": bn_mode(a),
             "unfreeze": a.get("Unfreeze", ""),
             "restart": a.get("Restart layers", ""),
             "metadata_csv": a.get("Metadata csv name", ""),

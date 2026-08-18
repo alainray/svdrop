@@ -13,7 +13,7 @@ from models import model_attributes
 from data.data import dataset_attributes, shift_types, prepare_data, log_data
 from data import dro_dataset
 from data import folds
-from utils import set_seed, Logger, CSVBatchLogger, log_args, get_model, hinge_loss, update_state_dict
+from utils import set_seed, Logger, CSVBatchLogger, log_args, get_model, hinge_loss, update_state_dict, freeze_bn_stats
 from train import train
 from data.folds import Subset, ConcatDataset
 from time import time
@@ -161,7 +161,9 @@ def main(args):
         restart_layers=args.restart_layers,
     )
 
-
+    if args.finetune and not args.train_bn:
+        n_frozen = freeze_bn_stats(model)
+        logger.write(f"Normalization layers kept in eval mode: {n_frozen}\n")
 
     if args.sv_dropout > 0.0:
         model.fc.set_n_dirs(1000) # Limit number of singular vectors to consider
@@ -247,6 +249,11 @@ if __name__ == "__main__":
     # Resume?
     parser.add_argument("--resume", default=False, action="store_true")
     parser.add_argument("--finetune", default=False, action="store_true")
+    # With --finetune the frozen part of the model now runs its normalization
+    # layers in eval mode, so they stop adapting to the batch composition. Pass
+    # --train_bn for the old behaviour, which is what every run made before this
+    # flag existed used. See NAMING.md.
+    parser.add_argument("--train_bn", default=False, action="store_true")
     parser.add_argument("--normalize", default=False, action="store_true") # normalize features to 0 mean, 1 std
     parser.add_argument("--recalculate_groups", default=False, action="store_true") # calculate groups after each epoch based on correctness
     parser.add_argument("--unfreeze", type=int,default=0) # unfreeze layers from x onward in resnet50

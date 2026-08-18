@@ -8,7 +8,7 @@ from random import random
 import numpy as np
 from tqdm import tqdm
 from data import dro_dataset
-from utils import AverageMeter, accuracy
+from utils import AverageMeter, accuracy, freeze_bn_stats
 from loss import LossComputer
 
 from pytorch_transformers import AdamW, WarmupLinearSchedule
@@ -42,6 +42,8 @@ def run_epoch(
 
     if is_training:
         model.train()
+        if args.finetune and not args.train_bn:
+            freeze_bn_stats(model)
         if (args.model.startswith("bert") and args.use_bert_params): # or (args.model == "bert"):
             model.zero_grad()
         optimizer.zero_grad()

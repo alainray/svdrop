@@ -95,6 +95,32 @@ class Normalize01(nn.Module):
         return (x - mean)/std
 t = 40 + 10*torch.randn(100,5)
 
+def freeze_bn_stats(model):
+    """Put the normalization layers of the frozen part of the model in eval mode.
+
+    run_epoch calls model.train() on every training epoch, so BatchNorm layers
+    normalize with batch statistics and keep updating running_mean/running_var
+    even when every backbone parameter has requires_grad=False. During last-layer
+    retraining that makes the "frozen" features drift, and since --reweight_groups
+    changes the composition of each batch, they drift towards the group-balanced
+    distribution. Call this right after model.train() so only the parts that are
+    actually being trained keep adapting.
+    """
+    frozen = 0
+    for module in model.modules():
+        if not isinstance(module, nn.modules.batchnorm._BatchNorm):
+            continue
+        params = list(module.parameters(recurse=False))
+        # A normalization layer belongs to the frozen part when none of its own
+        # parameters are trainable. Layers reactivated by --unfreeze keep
+        # adapting, which is what we want.
+        if params and any(p.requires_grad for p in params):
+            continue
+        module.eval()
+        frozen += 1
+    return frozen
+
+
 class AverageMeter(object):
     """Computes and stores the average and current value"""
     def __init__(self):
