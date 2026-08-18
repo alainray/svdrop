@@ -10,7 +10,11 @@
 # It also runs on the backbone retrained by wb95_erm_clean.sh, so backbone, head,
 # validation and test all come from the same generation of the dataset.
 #
-# Submit with:  sbatch --dependency=afterok:<erm_job> --array=0-4%3 scripts/wb95_lambda2.sh
+# One (lambda, seed) pair per array task, one GPU per task, assigned by SLURM.
+# Never set CUDA_VISIBLE_DEVICES here, and never run several trainings inside one
+# allocation: both put work on GPUs the scheduler did not hand to this job.
+#
+# Submit with:  sbatch --dependency=afterok:<erm_job> --array=0-14%4 scripts/wb95_lambda2.sh
 #
 #SBATCH --job-name=wb95_lambda2
 #SBATCH -t 1-00:00
@@ -31,38 +35,36 @@ PYTHON=~/pyenv/versions/mini/bin/python3
 cd "$ROOT"
 
 LAMBDAS=(0 0.01 0.1 0.3 1.0)
-WD="${LAMBDAS[${SLURM_ARRAY_TASK_ID:-0}]}"
+SEEDS=(111 222 333)
+TASK="${SLURM_ARRAY_TASK_ID:-0}"
+WD="${LAMBDAS[$((TASK / 3))]}"
+SEED="${SEEDS[$((TASK % 3))]}"
 EPOCHS=1001
 
-for SEED in 111 222 333; do
-  EXP="ft.erm.gdro__c-95__src-train__bal-rw__frac-1.0__wd-${WD}__lr-1e-5__ep-${EPOCHS}__bn-eval"
-  LOGDIR="results/CUB/${EXP}/model_outputs_${SEED}"
-  mkdir -p "$LOGDIR"
+EXP="ft.erm.gdro__c-95__src-train__bal-rw__frac-1.0__wd-${WD}__lr-1e-5__ep-${EPOCHS}__bn-eval"
+LOGDIR="results/CUB/${EXP}/model_outputs_${SEED}"
+mkdir -p "$LOGDIR"
 
-  "$PYTHON" run_expt.py \
-    -s confounder \
-    -d CUB \
-    -t waterbird_complete95 \
-    -c forest2water2 \
-    --root_dir ../datasets \
-    --metadata_csv_name "metadata.csv" \
-    --lr 1e-05 \
-    --batch_size 64 \
-    --weight_decay "$WD" \
-    --model resnet50 \
-    --n_epochs "$EPOCHS" \
-    --loss_type group_dro \
-    --seed "$SEED" \
-    --log_dir "$LOGDIR" \
-    --save_best \
-    --finetune \
-    --reweight_groups \
-    --cache_features \
-    --num_workers 6 \
-    --pretrained_path "pretrained_models/CUB/erm_95_clean_${SEED}.pth" &
+"$PYTHON" run_expt.py \
+  -s confounder \
+  -d CUB \
+  -t waterbird_complete95 \
+  -c forest2water2 \
+  --root_dir ../datasets \
+  --metadata_csv_name "metadata.csv" \
+  --lr 1e-05 \
+  --batch_size 64 \
+  --weight_decay "$WD" \
+  --model resnet50 \
+  --n_epochs "$EPOCHS" \
+  --loss_type group_dro \
+  --seed "$SEED" \
+  --log_dir "$LOGDIR" \
+  --save_best \
+  --finetune \
+  --reweight_groups \
+  --cache_features \
+  --num_workers 6 \
+  --pretrained_path "pretrained_models/CUB/erm_95_clean_${SEED}.pth"
 
-  sleep 90
-done
-
-wait
-echo "Finished lambda=${WD} (job ${SLURM_ARRAY_JOB_ID:-?} task ${SLURM_ARRAY_TASK_ID:-?})"
+echo "Finished lambda=${WD} seed=${SEED}"

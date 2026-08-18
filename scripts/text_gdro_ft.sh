@@ -18,9 +18,13 @@
 # one long run because BERT uses a warmup-linear schedule over t_total, so the
 # five-epoch point cannot be read off a longer run.
 #
+# One (budget, seed) pair per array task, one GPU per task, assigned by SLURM.
+# Never set CUDA_VISIBLE_DEVICES here, and never run several trainings inside one
+# allocation: both put work on GPUs the scheduler did not hand to this job.
+#
 # Submit with:
-#   sbatch --array=0-1 scripts/text_gdro_ft.sh MultiNLI
-#   sbatch --array=0-1 scripts/text_gdro_ft.sh civilcomments
+#   sbatch --array=0-5%2 scripts/text_gdro_ft.sh MultiNLI
+#   sbatch --array=0-5%2 scripts/text_gdro_ft.sh civilcomments
 #
 #SBATCH --job-name=text_gdro_ft
 #SBATCH -t 1-00:00
@@ -43,7 +47,10 @@ cd "$ROOT"
 
 DATASET="${1:?falta el dataset: MultiNLI o civilcomments}"
 BUDGETS=(5 100)
-EPOCHS="${BUDGETS[${SLURM_ARRAY_TASK_ID:-0}]}"
+SEEDS=(111 222 333)
+TASK="${SLURM_ARRAY_TASK_ID:-0}"
+EPOCHS="${BUDGETS[$((TASK / 3))]}"
+SEED="${SEEDS[$((TASK % 3))]}"
 
 case "$DATASET" in
   MultiNLI)
@@ -75,33 +82,31 @@ export HF_DATASETS_CACHE="$HF_HOME/datasets"
 export HUGGINGFACE_HUB_CACHE="$HF_HOME/hub"
 mkdir -p "$HF_DATASETS_CACHE" "$HUGGINGFACE_HUB_CACHE"
 
-for SEED in 111 222 333; do
-  EXP="ft.erm.gdro__c-std__src-train__bal-rw__frac-1.0__wd-${WD}__lr-${LR}__ep-${EPOCHS}__bn-eval"
-  LOGDIR="results/${RESULTS}/${EXP}/model_outputs_${SEED}"
-  mkdir -p "$LOGDIR"
+EXP="ft.erm.gdro__c-std__src-train__bal-rw__frac-1.0__wd-${WD}__lr-${LR}__ep-${EPOCHS}__bn-eval"
+LOGDIR="results/${RESULTS}/${EXP}/model_outputs_${SEED}"
+mkdir -p "$LOGDIR"
 
-  "$PYTHON" run_expt.py \
-    -s confounder \
-    -d "$DATASET_ARG" \
-    -t "$TARGET" \
-    -c "$CONF" \
-    --root_dir ../datasets \
-    --metadata_csv_name "$METADATA" \
-    --lr "$LR" \
-    --batch_size "$BS" \
-    --weight_decay "$WD" \
-    --model bert-base-uncased \
-    --use_bert_params 1 \
-    --n_epochs "$EPOCHS" \
-    --loss_type group_dro \
-    --seed "$SEED" \
-    --log_dir "$LOGDIR" \
-    --save_best \
-    --finetune \
-    --reweight_groups \
-    --cache_features \
-    --num_workers 6 \
-    --pretrained_path "pretrained_models/${RESULTS}/erm_0.9_${SEED}.pth"
-done
+"$PYTHON" run_expt.py \
+  -s confounder \
+  -d "$DATASET_ARG" \
+  -t "$TARGET" \
+  -c "$CONF" \
+  --root_dir ../datasets \
+  --metadata_csv_name "$METADATA" \
+  --lr "$LR" \
+  --batch_size "$BS" \
+  --weight_decay "$WD" \
+  --model bert-base-uncased \
+  --use_bert_params 1 \
+  --n_epochs "$EPOCHS" \
+  --loss_type group_dro \
+  --seed "$SEED" \
+  --log_dir "$LOGDIR" \
+  --save_best \
+  --finetune \
+  --reweight_groups \
+  --cache_features \
+  --num_workers 6 \
+  --pretrained_path "pretrained_models/${RESULTS}/erm_0.9_${SEED}.pth"
 
-echo "Finished ${DATASET} with ${EPOCHS} epochs"
+echo "Finished ${DATASET} seed=${SEED} with ${EPOCHS} epochs"

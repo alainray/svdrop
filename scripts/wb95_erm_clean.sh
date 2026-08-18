@@ -13,19 +13,23 @@
 # the same selection rule: for an ERM run --save_best keeps the checkpoint with
 # the best average validation accuracy, which is the head GDRO-FT then inherits.
 #
-# Submit with:  sbatch scripts/wb95_erm_clean.sh
+# One seed per array task, one GPU per task, assigned by SLURM. Never set
+# CUDA_VISIBLE_DEVICES here: it overrides the allocation and can land the job on
+# a GPU that belongs to somebody else.
+#
+# Submit with:  sbatch --array=0-2 scripts/wb95_erm_clean.sh
 #
 #SBATCH --job-name=wb95_erm_clean
 #SBATCH -t 1-00:00
-#SBATCH -o /workspace1/asoto/araymond/svdrop/exp_logs/%x_%j.out
-#SBATCH -e /workspace1/asoto/araymond/svdrop/exp_logs/%x_%j.err
+#SBATCH -o /workspace1/asoto/araymond/svdrop/exp_logs/%x_%A_%a.out
+#SBATCH -e /workspace1/asoto/araymond/svdrop/exp_logs/%x_%A_%a.err
 #SBATCH --chdir=/workspace1/asoto/araymond/svdrop
 #SBATCH --partition=ialab
 #SBATCH --nodelist=ventress
-#SBATCH --gres=gpu:3
+#SBATCH --gres=gpu:1
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=12
+#SBATCH --cpus-per-task=4
 
 set -euo pipefail
 
@@ -33,39 +37,32 @@ ROOT=/workspace1/asoto/araymond/svdrop
 PYTHON=~/pyenv/versions/mini/bin/python3
 cd "$ROOT"
 
+SEEDS=(111 222 333)
+SEED="${SEEDS[${SLURM_ARRAY_TASK_ID:-0}]}"
+
 EXP="e2e.erm__c-95__bal-none__frac-1.0__wd-1e-4__lr-1e-3__ep-301"
-i=0
-for SEED in 111 222 333; do
-  LOGDIR="results/CUB/${EXP}/model_outputs_${SEED}"
-  mkdir -p "$LOGDIR"
+LOGDIR="results/CUB/${EXP}/model_outputs_${SEED}"
+mkdir -p "$LOGDIR"
 
-  CUDA_VISIBLE_DEVICES=$i "$PYTHON" run_expt.py \
-    -s confounder \
-    -d CUB \
-    -t waterbird_complete95 \
-    -c forest2water2 \
-    --root_dir ../datasets \
-    --metadata_csv_name "metadata.csv" \
-    --lr 1e-03 \
-    --batch_size 64 \
-    --weight_decay 1e-04 \
-    --model resnet50 \
-    --n_epochs 301 \
-    --loss_type erm \
-    --seed "$SEED" \
-    --log_dir "$LOGDIR" \
-    --save_best \
-    --save_last \
-    --num_workers 4 &
-  i=$((i + 1))
-done
+"$PYTHON" run_expt.py \
+  -s confounder \
+  -d CUB \
+  -t waterbird_complete95 \
+  -c forest2water2 \
+  --root_dir ../datasets \
+  --metadata_csv_name "metadata.csv" \
+  --lr 1e-03 \
+  --batch_size 64 \
+  --weight_decay 1e-04 \
+  --model resnet50 \
+  --n_epochs 301 \
+  --loss_type erm \
+  --seed "$SEED" \
+  --log_dir "$LOGDIR" \
+  --save_best \
+  --save_last \
+  --num_workers 4
 
-wait
-
-# Stage the selected checkpoints under the name the finetuning scripts expect.
-for SEED in 111 222 333; do
-  cp "results/CUB/${EXP}/model_outputs_${SEED}/best_model.pth" \
-     "pretrained_models/CUB/erm_95_clean_${SEED}.pth"
-done
-
-echo "Finished; staged pretrained_models/CUB/erm_95_clean_{111,222,333}.pth"
+# Stage the selected checkpoint under the name the finetuning scripts expect.
+cp "${LOGDIR}/best_model.pth" "pretrained_models/CUB/erm_95_clean_${SEED}.pth"
+echo "Finished seed ${SEED}; staged pretrained_models/CUB/erm_95_clean_${SEED}.pth"
