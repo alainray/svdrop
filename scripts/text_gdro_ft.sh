@@ -13,18 +13,18 @@
 # pushed 412k (MultiNLI) or 448k (CivilComments) examples through twelve
 # transformer layers.
 #
-# Two budgets per dataset: the paper's, for comparability, and a long one, since
-# the head can now be trained to convergence. They are separate runs rather than
-# one long run because BERT uses a warmup-linear schedule over t_total, so the
-# five-epoch point cannot be read off a longer run.
+# The recipe is the paper's, untouched: AdamW with eps 1e-8, a linear decay of the
+# learning rate to zero over the whole run, gradient clipping at 1.0, and five
+# epochs, which is what the ERM backbone was trained for. The eval-mode encoder
+# is the only difference.
 #
-# One (budget, seed) pair per array task, one GPU per task, assigned by SLURM.
+# One seed per array task, one GPU per task, assigned by SLURM.
 # Never set CUDA_VISIBLE_DEVICES here, and never run several trainings inside one
 # allocation: both put work on GPUs the scheduler did not hand to this job.
 #
 # Submit with:
-#   sbatch --array=0-5%2 scripts/text_gdro_ft.sh MultiNLI
-#   sbatch --array=0-5%2 scripts/text_gdro_ft.sh civilcomments
+#   sbatch --array=0-2 scripts/text_gdro_ft.sh MultiNLI
+#   sbatch --array=0-2 scripts/text_gdro_ft.sh civilcomments
 #
 #SBATCH --job-name=text_gdro_ft
 #SBATCH -t 1-00:00
@@ -46,11 +46,9 @@ PYTHON=~/pyenv/versions/mini/bin/python3
 cd "$ROOT"
 
 DATASET="${1:?falta el dataset: MultiNLI o civilcomments}"
-BUDGETS=(5 100)
 SEEDS=(111 222 333)
-TASK="${SLURM_ARRAY_TASK_ID:-0}"
-EPOCHS="${BUDGETS[$((TASK / 3))]}"
-SEED="${SEEDS[$((TASK % 3))]}"
+SEED="${SEEDS[${SLURM_ARRAY_TASK_ID:-0}]}"
+EPOCHS=5
 
 case "$DATASET" in
   MultiNLI)

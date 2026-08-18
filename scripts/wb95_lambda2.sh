@@ -5,7 +5,12 @@
 # the peak sits around epoch 300 and then decays, so the paper's 301-epoch budget
 # was not truncated; and nothing below 1e-3 is distinguishable from 0, because
 # with lr=1e-5 the L2 term is numerically invisible there. So this pass keeps the
-# range that can actually matter and shortens the budget.
+# range that can actually matter and goes back to the paper's budget.
+#
+# Everything else stays as the paper had it: SGD with momentum 0.9 at a constant
+# lr of 1e-5, batch 64, and 301 epochs, which is what the ERM backbone was
+# trained for. The weight decay is the only knob being swept, and the BatchNorm
+# fix the only other change.
 #
 # It also runs on the backbone retrained by wb95_erm_clean.sh, so backbone, head,
 # validation and test all come from the same generation of the dataset.
@@ -39,7 +44,7 @@ SEEDS=(111 222 333)
 TASK="${SLURM_ARRAY_TASK_ID:-0}"
 WD="${LAMBDAS[$((TASK / 3))]}"
 SEED="${SEEDS[$((TASK % 3))]}"
-EPOCHS=1001
+EPOCHS=301
 
 EXP="ft.erm.gdro__c-95__src-train__bal-rw__frac-1.0__wd-${WD}__lr-1e-5__ep-${EPOCHS}__bn-eval"
 LOGDIR="results/CUB/${EXP}/model_outputs_${SEED}"

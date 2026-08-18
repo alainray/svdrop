@@ -10,18 +10,16 @@
 # logs exactly (train 71629 / 66874 / 22880 / 1387). So the inherited
 # pretrained_models/CelebA/erm_*.pth are valid as they are.
 #
-# The paper's recipe is lr 1e-5, wd 0.1, batch 64, 51 epochs. Three weight decays
-# around it, since on Waterbirds the paper's value turned out to sit far from the
-# range where lambda does anything. The budget goes to 301 epochs because the
-# head is trained with plain SGD at a constant learning rate, so the 51-epoch
-# point can be read straight off the same CSVs -- unlike the BERT runs, where the
-# warmup-linear schedule depends on the total.
+# The recipe is the paper's, untouched: SGD with momentum 0.9 at a constant lr of
+# 1e-5, wd 0.1, batch 64, and 51 epochs, which is what the ERM backbone was
+# trained for. The BatchNorm fix is the only difference, which is the whole point
+# of the comparison.
 #
-# One (lambda, seed) pair per array task, one GPU per task, assigned by SLURM.
+# One seed per array task, one GPU per task, assigned by SLURM.
 # Never set CUDA_VISIBLE_DEVICES here, and never run several trainings inside one
 # allocation: both put work on GPUs the scheduler did not hand to this job.
 #
-# Submit with:  sbatch --array=0-8%3 scripts/celeba_gdro_ft.sh
+# Submit with:  sbatch --array=0-2 scripts/celeba_gdro_ft.sh
 #
 #SBATCH --job-name=celeba_gdro_ft
 #SBATCH -t 1-00:00
@@ -42,12 +40,10 @@ ROOT=/workspace1/asoto/araymond/svdrop
 PYTHON=~/pyenv/versions/mini/bin/python3
 cd "$ROOT"
 
-LAMBDAS=(0 0.1 1.0)
 SEEDS=(111 222 333)
-TASK="${SLURM_ARRAY_TASK_ID:-0}"
-WD="${LAMBDAS[$((TASK / 3))]}"
-SEED="${SEEDS[$((TASK % 3))]}"
-EPOCHS=301
+SEED="${SEEDS[${SLURM_ARRAY_TASK_ID:-0}]}"
+WD=0.1
+EPOCHS=51
 
 EXP="ft.erm.gdro__c-std__src-train__bal-rw__frac-1.0__wd-${WD}__lr-1e-5__ep-${EPOCHS}__bn-eval"
 LOGDIR="results/CelebA/${EXP}/model_outputs_${SEED}"
@@ -75,4 +71,4 @@ mkdir -p "$LOGDIR"
   --num_workers 6 \
   --pretrained_path "pretrained_models/CelebA/erm_${SEED}.pth"
 
-echo "Finished CelebA lambda=${WD} seed=${SEED}"
+echo "Finished CelebA seed=${SEED}"
