@@ -95,30 +95,57 @@ class Normalize01(nn.Module):
         return (x - mean)/std
 t = 40 + 10*torch.randn(100,5)
 
-def freeze_bn_stats(model):
-    """Put the normalization layers of the frozen part of the model in eval mode.
+# Modules that compute something different in training mode than in evaluation
+# mode. BatchNorm swaps running statistics for batch statistics and updates the
+# running ones; the dropout family injects noise.
+STATE_OR_NOISE = (
+    nn.modules.batchnorm._BatchNorm,
+    nn.modules.dropout._DropoutNd,
+    nn.Dropout,
+    nn.AlphaDropout,
+)
 
-    run_epoch calls model.train() on every training epoch, so BatchNorm layers
-    normalize with batch statistics and keep updating running_mean/running_var
-    even when every backbone parameter has requires_grad=False. During last-layer
-    retraining that makes the "frozen" features drift, and since --reweight_groups
-    changes the composition of each batch, they drift towards the group-balanced
-    distribution. Call this right after model.train() so only the parts that are
-    actually being trained keep adapting.
+
+def eval_frozen_modules(model):
+    """Put the frozen part of the model in eval mode, leaving the head alone.
+
+    run_epoch calls model.train() on every training epoch, including runs where
+    --finetune left every backbone parameter with requires_grad=False. The
+    backbone then keeps behaving as if it were being trained:
+
+    - ResNet: BatchNorm normalizes with batch statistics and rewrites
+      running_mean/running_var. Because --reweight_groups changes what a batch
+      contains, the statistics drift towards the group-balanced distribution and
+      the inherited head stops matching the features it was fitted on.
+    - BERT: the 38 dropout layers stay on, so the "frozen" representation of an
+      example is different every time it is seen.
+
+    Neither is what "retrain the last layer on frozen features" means, so this
+    puts every stateful or stochastic module of the frozen part in eval mode. A
+    module counts as part of the head when it lives inside a module that owns
+    trainable parameters, and BatchNorm layers reactivated by --unfreeze keep
+    their own parameters trainable, so both keep adapting.
     """
-    frozen = 0
-    for module in model.modules():
-        if not isinstance(module, nn.modules.batchnorm._BatchNorm):
-            continue
-        params = list(module.parameters(recurse=False))
-        # A normalization layer belongs to the frozen part when none of its own
-        # parameters are trainable. Layers reactivated by --unfreeze keep
-        # adapting, which is what we want.
-        if params and any(p.requires_grad for p in params):
-            continue
-        module.eval()
-        frozen += 1
-    return frozen
+    # Which modules own a trainable parameter. Anything else is frozen.
+    owners = set()
+    for name, p in model.named_parameters():
+        if p.requires_grad:
+            owners.add(name.rsplit(".", 1)[0] if "." in name else "")
+
+    # Switch the whole network to eval and put only the trainable modules back
+    # into training mode. Setting the stochastic layers individually is not
+    # enough: transformers applies attention dropout functionally, guarded by
+    # the training flag of the attention module rather than by an nn.Dropout
+    # child, so a BERT encoder left in training mode keeps injecting noise even
+    # with every nn.Dropout switched off.
+    model.eval()
+    modules = dict(model.named_modules())
+    for name in owners:
+        if name in modules:
+            modules[name].train()
+
+    return sum(1 for m in model.modules()
+               if isinstance(m, STATE_OR_NOISE) and not m.training)
 
 
 class AverageMeter(object):

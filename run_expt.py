@@ -13,7 +13,7 @@ from models import model_attributes
 from data.data import dataset_attributes, shift_types, prepare_data, log_data
 from data import dro_dataset
 from data import folds
-from utils import set_seed, Logger, CSVBatchLogger, log_args, get_model, hinge_loss, update_state_dict, freeze_bn_stats
+from utils import set_seed, Logger, CSVBatchLogger, log_args, get_model, hinge_loss, update_state_dict, eval_frozen_modules
 from feature_cache import build_cached_data
 from train import train
 from data.folds import Subset, ConcatDataset
@@ -162,9 +162,9 @@ def main(args):
         restart_layers=args.restart_layers,
     )
 
-    if args.finetune and not args.train_bn:
-        n_frozen = freeze_bn_stats(model)
-        logger.write(f"Normalization layers kept in eval mode: {n_frozen}\n")
+    if args.finetune and not args.train_frozen:
+        n_frozen = eval_frozen_modules(model)
+        logger.write(f"Frozen modules kept in eval mode: {n_frozen}\n")
 
     if args.cache_features:
         data, model = build_cached_data(model, data, args, logger,
@@ -255,11 +255,11 @@ if __name__ == "__main__":
     # Resume?
     parser.add_argument("--resume", default=False, action="store_true")
     parser.add_argument("--finetune", default=False, action="store_true")
-    # With --finetune the frozen part of the model now runs its normalization
-    # layers in eval mode, so they stop adapting to the batch composition. Pass
-    # --train_bn for the old behaviour, which is what every run made before this
-    # flag existed used. See NAMING.md.
-    parser.add_argument("--train_bn", default=False, action="store_true")
+    # With --finetune the frozen part of the model now runs in eval mode, so its
+    # BatchNorm statistics stop adapting to the batch composition and its dropout
+    # is off. Pass --train_frozen for the old behaviour, which is what every run
+    # made before this flag existed used. See NAMING.md.
+    parser.add_argument("--train_frozen", default=False, action="store_true")
     # Precompute the frozen backbone's output once instead of every epoch. Only
     # valid when the backbone really is fixed; see feature_cache.py.
     parser.add_argument("--cache_features", default=False, action="store_true")

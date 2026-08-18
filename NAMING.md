@@ -38,7 +38,7 @@ Remaining keys, in this order (omit any that does not apply):
 | `wd` | `1.0`, `1e-4`, ... | weight decay on the trainable parameters (λ) |
 | `lr` | `1e-5`, ... | learning rate |
 | `ep` | `301`, ... | number of epochs |
-| `bn` | `train`, `eval` | BatchNorm mode of the frozen backbone (see below) |
+| `bn` | `train`, `eval` | mode of the frozen part of the network (see below) |
 | `unfreeze`, `restart` | integers | only when non-zero |
 | `feat` | `oldgen`, ... | only when the frozen backbone comes from a different instantiation of the dataset than the head is trained on |
 
@@ -53,13 +53,21 @@ e2e.gdro__c-95__bal-rw__frac-1.0__wd-1.0__lr-1e-5__ep-301
 ## Why `bn` is an axis
 
 `run_epoch` calls `model.train()` on every training epoch, including runs where
-every backbone parameter has `requires_grad=False`. BatchNorm layers therefore
-normalise with batch statistics and keep updating `running_mean`/`running_var`,
-so the "frozen" features drift during last-layer retraining — and because
-`--reweight_groups` changes batch composition, they drift *towards the balanced
-distribution*. `--freeze_bn` puts the frozen part in eval mode, which is what a
-last-layer method is supposed to do. Every run made before that flag existed is
-`bn-train`.
+every backbone parameter has `requires_grad=False`. The frozen part then keeps
+behaving as if it were training:
+
+- **ResNet** (Waterbirds, CelebA): BatchNorm normalises with batch statistics and
+  keeps updating `running_mean`/`running_var`. Because `--reweight_groups`
+  changes what a batch contains, they drift *towards the balanced distribution*
+  and the inherited head stops matching the features it was fitted on.
+- **BERT** (MultiNLI, CivilComments): the 38 dropout layers stay on, so the
+  "frozen" representation of an example is different every time it is seen. No
+  state is corrupted, but the features are not fixed.
+- **SimpleCNN** (MNIST-CIFAR): no BatchNorm and no dropout, so the axis is moot
+  and those runs are unaffected.
+
+By default the frozen part now runs in eval mode; `--train_frozen` restores the
+old behaviour. Every run made before that flag existed is `bn-train`.
 
 ## Reporting
 

@@ -1,20 +1,24 @@
 """Precompute backbone features once so last-layer retraining is cheap.
 
-When --finetune freezes the backbone and --train_bn is off, the backbone is a
-fixed function: parameters do not move and the normalization layers run in eval
-mode, so they no longer adapt to the batch composition. With --augment_data off
-the transforms are deterministic too (Resize + CenterCrop), which makes the
-features of every image constant across epochs.
+When --finetune freezes the backbone and --train_frozen is off, the backbone is a
+fixed function: parameters do not move, BatchNorm no longer adapts to the batch
+composition and dropout is off. With --augment_data off the image transforms are
+deterministic too (Resize + CenterCrop), and the text datasets feed fixed token
+ids. Under those conditions the representation of an example never changes.
 
-Under those conditions running the full network every epoch is pure waste: a
-301-epoch last-layer run spends hours recomputing the same ~12k feature vectors.
-This module extracts them once and hands back tensor-backed datasets plus the
-head alone, so the training loop in train.py stays exactly the same but each
-epoch is a handful of matrix products.
+Running the full network every epoch is then pure waste. For Waterbirds a
+301-epoch last-layer run spends hours recomputing the same ~12k vectors; for
+MultiNLI every epoch pushes 412k examples through twelve transformer layers,
+which is why those runs were capped at five or six epochs.
 
-This makes long-budget sweeps (3000+ epochs over a grid of weight decays)
-practical, which is the only way to tell a truncated optimisation budget apart
-from a regularisation effect.
+This module extracts the representations once, in memory, and hands back
+tensor-backed datasets plus the head alone, so the training loop in train.py is
+unchanged but each epoch becomes a handful of matrix products. Nothing is
+written to disk: the cache depends on the checkpoint, the seed and the dataset
+variant, so it is cheaper to recompute it per run than to manage it.
+
+This makes long-budget sweeps practical, which is the only way to tell a
+truncated optimisation budget apart from a regularisation effect.
 """
 import numpy as np
 import torch
@@ -46,19 +50,39 @@ class TensorGroupDataset(Dataset):
 
 
 def _split_head(model):
-    """Detach the trainable head from the frozen feature extractor."""
-    if not hasattr(model, "fc"):
-        raise ValueError(
-            "--cache_features only supports architectures with a .fc head "
-            "(ResNet family). BERT keeps its own classifier."
-        )
-    head = model.fc
-    model.fc = nn.Identity()
-    return head
+    """Detach the trainable head from the frozen feature extractor.
+
+    Returns (head, forward) where `forward` maps a batch of raw inputs to the
+    representation the head consumes.
+    """
+    if hasattr(model, "fc"):
+        head = model.fc
+        model.fc = nn.Identity()
+        return head, lambda x: model(x)
+
+    if hasattr(model, "classifier") and hasattr(model, "bert"):
+        # BertForSequenceClassification. The cached files under glue_data are
+        # tokenized inputs (input_ids / input_mask / segment_ids), not
+        # representations, so the whole encoder runs on every forward. What the
+        # classifier consumes is the pooled [CLS] vector, which is what we cache.
+        head = model.classifier
+
+        def forward(x):
+            return model.bert(
+                input_ids=x[:, :, 0],
+                attention_mask=x[:, :, 1],
+                token_type_ids=x[:, :, 2],
+            )[1]
+
+        return head, forward
+
+    raise ValueError(
+        "--cache_features does not know how to split a head off this model."
+    )
 
 
 @torch.no_grad()
-def _extract(model, dataset, batch_size, num_workers, device):
+def _extract(forward, dataset, batch_size, num_workers, device):
     loader = DataLoader(
         dataset,
         batch_size=batch_size,
@@ -69,7 +93,7 @@ def _extract(model, dataset, batch_size, num_workers, device):
     feats, ys, gs = [], [], []
     for batch in loader:
         x, y, g = batch[0].to(device), batch[1], batch[2]
-        feats.append(model(x).detach().cpu())
+        feats.append(forward(x).detach().cpu())
         ys.append(y)
         gs.append(g)
     return torch.cat(feats), torch.cat(ys), torch.cat(gs)
@@ -86,10 +110,11 @@ def build_cached_data(model, data, args, logger, device):
             "--cache_features needs deterministic transforms; --augment_data "
             "makes the features of an image change from epoch to epoch."
         )
-    if args.train_bn:
+    if args.train_frozen:
         raise ValueError(
-            "--cache_features needs a fixed backbone; --train_bn lets the "
-            "normalization statistics keep adapting during training."
+            "--cache_features needs a fixed backbone; --train_frozen lets the "
+            "frozen part keep adapting (BatchNorm statistics, dropout noise) "
+            "during training."
         )
     if args.unfreeze > 0:
         raise ValueError(
@@ -97,7 +122,7 @@ def build_cached_data(model, data, args, logger, device):
             "it trainable."
         )
 
-    head = _split_head(model)
+    head, forward = _split_head(model)
     model.eval()
     model = model.to(device)
 
@@ -108,7 +133,7 @@ def build_cached_data(model, data, args, logger, device):
             cached[f"{split}_data"] = None
             cached[f"{split}_loader"] = None
             continue
-        features, y, g = _extract(model, source, args.batch_size,
+        features, y, g = _extract(forward, source, args.batch_size,
                                   args.num_workers, device)
         logger.write(f"Cached {split} features: {tuple(features.shape)}\n")
         cached[f"{split}_data"] = dro_dataset.DRODataset(

@@ -108,17 +108,19 @@ def fmt(v):
 
 
 def bn_mode(a):
-    """BatchNorm mode of the frozen part during last-layer retraining.
+    """Mode of the frozen part during last-layer retraining.
 
-    run_epoch always calls model.train(), so every run made before --train_bn
-    existed kept adapting BatchNorm statistics; those dumps have no "Train bn"
-    key at all. End-to-end runs train BN legitimately, so the axis is n/a.
+    run_epoch always calls model.train(), so every run made before
+    --train_frozen existed kept its BatchNorm statistics adapting (ResNet) and
+    its dropout on (BERT); those dumps have no "Train frozen" key at all.
+    End-to-end runs train the whole network, so the axis is n/a.
     """
     if not is_true(a.get("Finetune")):
         return "n/a"
-    if "Train bn" not in a:
-        return "train"
-    return "train" if is_true(a["Train bn"]) else "eval"
+    for key in ("Train frozen", "Train bn"):
+        if key in a:
+            return "train" if is_true(a[key]) else "eval"
+    return "train"
 
 
 def canonical_name(a, dataset, run):
