@@ -1,0 +1,31 @@
+/home/araymond/pyenv/versions/mini/lib/python3.10/site-packages/transformers/utils/hub.py:111: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+Traceback (most recent call last):
+  File "/home/araymond/pyenv/versions/mini/lib/python3.10/site-packages/pandas/core/indexes/base.py", line 3812, in get_loc
+    return self._engine.get_loc(casted_key)
+  File "pandas/_libs/index.pyx", line 167, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 196, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7088, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7096, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'male'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace1/araymond/svdrop/run_expt.py", line 347, in <module>
+    main(args)
+  File "/workspace1/araymond/svdrop/run_expt.py", line 55, in main
+    train_data, val_data, test_data = prepare_data(
+  File "/workspace1/araymond/svdrop/data/data.py", line 43, in prepare_data
+    return prepare_confounder_data(
+  File "/workspace1/araymond/svdrop/data/confounder_utils.py", line 52, in prepare_confounder_data
+    full_dataset = confounder_settings[args.dataset]["constructor"](
+  File "/workspace1/araymond/svdrop/data/celebA_dataset.py", line 60, in __init__
+    self.confounder_idx = [self.attr_idx(a) for a in self.confounder_names]
+  File "/workspace1/araymond/svdrop/data/celebA_dataset.py", line 60, in <listcomp>
+    self.confounder_idx = [self.attr_idx(a) for a in self.confounder_names]
+  File "/workspace1/araymond/svdrop/data/celebA_dataset.py", line 99, in attr_idx
+    return self.attr_names.get_loc(attr_name)
+  File "/home/araymond/pyenv/versions/mini/lib/python3.10/site-packages/pandas/core/indexes/base.py", line 3819, in get_loc
+    raise KeyError(key) from err
+KeyError: 'male'

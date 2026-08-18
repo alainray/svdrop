@@ -1,0 +1,52 @@
+Dataset: CUB
+Shift type: confounder
+Wandb: False
+Project name: spurious
+Target name: waterbird_complete625
+Confounder names: ['forest2water2']
+Up weight: 0
+Resume: False
+Finetune: True
+Unfreeze: 1
+Minority fraction: None
+Imbalance ratio: None
+Fraction: 1.0
+Root dir: ../datasets
+Reweight groups: True
+Augment data: False
+Val fraction: 0.1
+Loss type: group_dro
+Alpha: 0.2
+Generalization adjustment: 0.0
+Sv dropout: 0.0
+Automatic adjustment: False
+Robust step size: 0.01
+Joint dro alpha: 1
+Use normalized loss: False
+Btl: False
+Hinge: False
+Model: resnet50
+Train from scratch: False
+Pretrained path: pretrained_models/CUB/erm_625_222.pth
+N epochs: 301
+Batch size: 64
+Lr: 1e-05
+Scheduler: False
+Weight decay: 1.0
+Gamma: 0.1
+Minimum variational weight: 0
+Seed: 222
+Show progress: False
+Log dir: results/CUB/erm_gdro_frz1_625/model_outputs_222
+Log every: 50
+Save step: 50
+Save best: True
+Save last: False
+Use bert params: 1
+Num folds per sweep: 5
+Num sweeps: 4
+Q: 0.7
+Metadata csv name: metadata.csv
+Fold: None
+Metadata path: ../datasets//metadata.csv
+Aug col: None

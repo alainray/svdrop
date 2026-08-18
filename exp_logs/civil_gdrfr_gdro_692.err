@@ -1,0 +1,12 @@
+/home/araymond/pyenv/versions/mini/lib/python3.10/site-packages/transformers/utils/hub.py:111: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+Traceback (most recent call last):
+  File "/workspace1/araymond/svdrop/run_expt.py", line 347, in <module>
+    main(args)
+  File "/workspace1/araymond/svdrop/run_expt.py", line 120, in main
+    train_loader = dro_dataset.get_loader(train_data,
+  File "/workspace1/araymond/svdrop/data/dro_dataset.py", line 96, in get_loader
+    sampler = WeightedRandomSampler(weights,
+  File "/home/araymond/pyenv/versions/mini/lib/python3.10/site-packages/torch/utils/data/sampler.py", line 255, in __init__
+    raise ValueError(
+ValueError: num_samples should be a positive integer value, but got num_samples=0

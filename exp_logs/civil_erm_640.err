@@ -1,0 +1,24 @@
+/home/araymond/pyenv/versions/mini/lib/python3.10/site-packages/transformers/utils/hub.py:111: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+Traceback (most recent call last):
+  File "/workspace1/araymond/svdrop/run_expt.py", line 347, in <module>
+    main(args)
+  File "/workspace1/araymond/svdrop/run_expt.py", line 55, in main
+    train_data, val_data, test_data = prepare_data(
+  File "/workspace1/araymond/svdrop/data/data.py", line 43, in prepare_data
+    return prepare_confounder_data(
+  File "/workspace1/araymond/svdrop/data/confounder_utils.py", line 61, in prepare_confounder_data
+    full_dataset = confounder_settings[args.dataset]["constructor"](
+  File "/workspace1/araymond/svdrop/data/jigsaw_dataset.py", line 63, in __init__
+    self.metadata_df = pd.read_csv(
+  File "/home/araymond/pyenv/versions/mini/lib/python3.10/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+  File "/home/araymond/pyenv/versions/mini/lib/python3.10/site-packages/pandas/io/parsers/readers.py", line 620, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+  File "/home/araymond/pyenv/versions/mini/lib/python3.10/site-packages/pandas/io/parsers/readers.py", line 1620, in __init__
+    self._engine = self._make_engine(f, self.engine)
+  File "/home/araymond/pyenv/versions/mini/lib/python3.10/site-packages/pandas/io/parsers/readers.py", line 1880, in _make_engine
+    self.handles = get_handle(
+  File "/home/araymond/pyenv/versions/mini/lib/python3.10/site-packages/pandas/io/common.py", line 873, in get_handle
+    handle = open(
+FileNotFoundError: [Errno 2] No such file or directory: '../datasets/jigsaw/data/metadata.csv'

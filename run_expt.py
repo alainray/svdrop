@@ -114,7 +114,7 @@ def main(args):
 
     loader_kwargs = {
         "batch_size": args.batch_size,
-        "num_workers": 4,
+        "num_workers": 0,
         "pin_memory": True,
     }
     train_loader = dro_dataset.get_loader(train_data,

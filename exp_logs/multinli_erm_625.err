@@ -1,0 +1,14 @@
+/home/araymond/pyenv/versions/mini/lib/python3.10/site-packages/transformers/utils/hub.py:111: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+Traceback (most recent call last):
+  File "/workspace1/araymond/svdrop/run_expt.py", line 347, in <module>
+    main(args)
+  File "/workspace1/araymond/svdrop/run_expt.py", line 55, in main
+    train_data, val_data, test_data = prepare_data(
+  File "/workspace1/araymond/svdrop/data/data.py", line 43, in prepare_data
+    return prepare_confounder_data(
+  File "/workspace1/araymond/svdrop/data/confounder_utils.py", line 52, in prepare_confounder_data
+    full_dataset = confounder_settings[args.dataset]["constructor"](
+  File "/workspace1/araymond/svdrop/data/multinli_dataset.py", line 43, in __init__
+    assert model_type == "bert"
+AssertionError

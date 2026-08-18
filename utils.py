@@ -169,6 +169,7 @@ def update_state_dict(old, new, layers=["layer4"]):
                 results[k] = v # update with new value
     return results
 
+'''
 def get_model(model, pretrained, resume, n_classes, dataset, log_dir, finetune, unfreeze, normalize, from_file, restart_layers):
 
     model_name = model
@@ -246,6 +247,113 @@ def get_model(model, pretrained, resume, n_classes, dataset, log_dir, finetune, 
             param.requires_grad = True
     for name, param in model.named_parameters():
         print(name, param.requires_grad)
+    return model
+'''
+
+def get_model(model, pretrained, resume, n_classes, dataset, log_dir,
+              finetune, unfreeze, normalize, from_file, restart_layers):
+
+    model_name = model
+    d = None  # solo se usará para arquitecturas tipo ResNet
+
+    if model == "scnn":
+        model = SimpleCNN([32,64,128], 1, num_classes=n_classes, add_pooling=False)
+
+    elif model == "resnet50":
+        model = torchvision.models.resnet50(pretrained=pretrained)
+        d = model.fc.in_features
+        model.fc = SVDropClassifier(d, n_classes)
+
+    elif model == "resnet34":
+        model = torchvision.models.resnet34(pretrained=pretrained)
+        d = model.fc.in_features
+        model.fc = nn.Linear(d, n_classes)
+
+    elif model == "wideresnet50":
+        model = torchvision.models.wide_resnet50_2(pretrained=pretrained)
+        d = model.fc.in_features
+        model.fc = nn.Linear(d, n_classes)
+
+    elif model_name.startswith("bert"):
+        # === BERT ===
+        if dataset == "MultiNLI":
+            # Usas pytorch_transformers aquí para ser consistente con tu training loop
+            from pytorch_transformers import BertConfig, BertForSequenceClassification
+            config = BertConfig.from_pretrained(
+                "bert-base-uncased",
+                num_labels=3,
+                finetuning_task="mnli",
+            )
+            model = BertForSequenceClassification.from_pretrained(
+                "bert-base-uncased",
+                from_tf=False,
+                config=config,
+            )
+        elif dataset == "jigsaw":
+            # CivilComments/Jigsaw: binario (num_labels = n_classes)
+            from transformers import BertForSequenceClassification
+            model = BertForSequenceClassification.from_pretrained(
+                model_name,  # p.ej. "bert-base-uncased"
+                num_labels=n_classes,
+            )
+            print(f"n_classes = {n_classes}")
+        else:
+            raise NotImplementedError(f"BERT no implementado para dataset {dataset}")
+
+    else:
+        raise ValueError(f"{model_name} Model not recognized.")
+
+    # === Carga de pesos desde archivo, si corresponde ===
+    if from_file != "":
+        print(f"Loading pretrained model from: {from_file}")
+        weights = torch.load(from_file, map_location="cpu")
+        if restart_layers > 0:
+            old_sd = model.state_dict()
+            layers = [f"layer{i+1}" for i in range(restart_layers)]
+            weights = update_state_dict(old_sd, weights, layers=layers)
+        model.load_state_dict(weights)
+
+    # === Reanudar entrenamiento ===
+    if resume:
+        weights = torch.load(os.path.join(log_dir, "last_model.pth"), map_location="cpu")
+        model.load_state_dict(weights)
+
+    # === Normalización (solo tiene sentido para arquitecturas con .fc) ===
+    if normalize and hasattr(model, "fc"):
+        norm = Normalize01()
+        seq = Sequential(norm, SVDropClassifier(d, n_classes))
+        model.fc = seq
+
+    # === Política de fine-tuning ===
+    # Nota: en tu código actual "finetune=True" significa CONGELAR backbone
+    # y entrenar solo la cabeza (y para ResNet, opcionalmente capas desde 'unfreeze').
+    if finetune:
+        # Congelar todo
+        for p in model.parameters():
+            p.requires_grad = False
+
+        # ResNet: reactivar últimos bloques si se pide
+        if model_name == "resnet50" and unfreeze > 0:
+            for layer_number in range(unfreeze, 5):
+                layer_name = f"layer{layer_number}"
+                module = getattr(model, layer_name, None)
+                if module is not None:
+                    for _, p in module.named_parameters():
+                        p.requires_grad = True
+
+        # Reactivar solo la cabeza, sea .fc (ResNet) o .classifier (BERT)
+        if hasattr(model, "fc"):
+            for p in model.fc.parameters():
+                p.requires_grad = True
+        elif hasattr(model, "classifier"):
+            for p in model.classifier.parameters():
+                p.requires_grad = True
+    # Si finetune=False, por defecto todo queda entrenable (incluido BERT completo).
+
+    # (Opcional) imprimir qué queda entrenable
+    for name, p in model.named_parameters():
+        print(name, p.requires_grad)
+
     return model
 
 

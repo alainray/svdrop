@@ -1,0 +1,579 @@
+
+
+
+
+
+ Using bert params 
+
+
+
+
+
+
+
+WARNING: You are using 'multinli_metadata_val_as_train.csv' instead of the default 'metadata.csv'.
+
+
+Dataset: MultiNLI
+Shift type: confounder
+Wandb: False
+Project name: spurious
+Target name: gold_label_random
+Confounder names: ['sentence2_has_negation']
+Up weight: 0
+Resume: False
+Finetune: True
+Normalize: False
+Recalculate groups: False
+Unfreeze: 0
+Restart layers: 0
+Minority fraction: None
+Imbalance ratio: None
+Fraction: 1.0
+Root dir: ../datasets
+Reweight groups: True
+Augment data: False
+Val fraction: 0.1
+Loss type: group_dro
+Alpha: 0.2
+Generalization adjustment: 0.0
+Sv dropout: 0.0
+Automatic adjustment: False
+Robust step size: 0.01
+Joint dro alpha: 1
+Use normalized loss: False
+Btl: False
+Hinge: False
+Model: bert-base-uncased
+Train from scratch: False
+Pretrained path: pretrained_models/MultiNLI/erm_0.9_111.pth
+N epochs: 6
+Batch size: 32
+Lr: 2e-05
+Scheduler: False
+L1: 0.0
+Weight decay: 0.0
+Gamma: 0.1
+Minimum variational weight: 0
+Seed: 111
+Accum: 1
+Show progress: False
+Log dir: results/MultiNLI/erm_gdro/model_outputs_111
+Log every: 50
+Save step: 10
+Save best: True
+Save last: True
+Use bert params: 1
+Num folds per sweep: 5
+Num sweeps: 4
+Q: 0.7
+Metadata csv name: multinli_metadata_val_as_train.csv
+Fold: None
+Metadata path: None
+Aug col: None
+Max grad norm: 1.0
+Adam epsilon: 1e-08
+Warmup steps: 0
+
+Training Data...
+    gold_label_random = 0, sentence2_has_negation = 0: n = 613
+    gold_label_random = 0, sentence2_has_negation = 1: n = 613
+    gold_label_random = 1, sentence2_has_negation = 0: n = 613
+    gold_label_random = 1, sentence2_has_negation = 1: n = 613
+    gold_label_random = 2, sentence2_has_negation = 0: n = 613
+    gold_label_random = 2, sentence2_has_negation = 1: n = 613
+Validation Data...
+    gold_label_random = 0, sentence2_has_negation = 0: n = 79699
+    gold_label_random = 0, sentence2_has_negation = 1: n = 15179
+    gold_label_random = 1, sentence2_has_negation = 0: n = 93712
+    gold_label_random = 1, sentence2_has_negation = 1: n = 1521
+    gold_label_random = 2, sentence2_has_negation = 0: n = 92672
+    gold_label_random = 2, sentence2_has_negation = 1: n = 2176
+Test Data...
+    gold_label_random = 0, sentence2_has_negation = 0: n = 34597
+    gold_label_random = 0, sentence2_has_negation = 1: n = 6655
+    gold_label_random = 1, sentence2_has_negation = 0: n = 40496
+    gold_label_random = 1, sentence2_has_negation = 1: n = 886
+    gold_label_random = 2, sentence2_has_negation = 0: n = 39930
+    gold_label_random = 2, sentence2_has_negation = 1: n = 1148
+Training
+Loading pretrained model from: pretrained_models/MultiNLI/erm_0.9_111.pth
+bert.embeddings.word_embeddings.weight False
+bert.embeddings.position_embeddings.weight False
+bert.embeddings.token_type_embeddings.weight False
+bert.embeddings.LayerNorm.weight False
+bert.embeddings.LayerNorm.bias False
+bert.encoder.layer.0.attention.self.query.weight False
+bert.encoder.layer.0.attention.self.query.bias False
+bert.encoder.layer.0.attention.self.key.weight False
+bert.encoder.layer.0.attention.self.key.bias False
+bert.encoder.layer.0.attention.self.value.weight False
+bert.encoder.layer.0.attention.self.value.bias False
+bert.encoder.layer.0.attention.output.dense.weight False
+bert.encoder.layer.0.attention.output.dense.bias False
+bert.encoder.layer.0.attention.output.LayerNorm.weight False
+bert.encoder.layer.0.attention.output.LayerNorm.bias False
+bert.encoder.layer.0.intermediate.dense.weight False
+bert.encoder.layer.0.intermediate.dense.bias False
+bert.encoder.layer.0.output.dense.weight False
+bert.encoder.layer.0.output.dense.bias False
+bert.encoder.layer.0.output.LayerNorm.weight False
+bert.encoder.layer.0.output.LayerNorm.bias False
+bert.encoder.layer.1.attention.self.query.weight False
+bert.encoder.layer.1.attention.self.query.bias False
+bert.encoder.layer.1.attention.self.key.weight False
+bert.encoder.layer.1.attention.self.key.bias False
+bert.encoder.layer.1.attention.self.value.weight False
+bert.encoder.layer.1.attention.self.value.bias False
+bert.encoder.layer.1.attention.output.dense.weight False
+bert.encoder.layer.1.attention.output.dense.bias False
+bert.encoder.layer.1.attention.output.LayerNorm.weight False
+bert.encoder.layer.1.attention.output.LayerNorm.bias False
+bert.encoder.layer.1.intermediate.dense.weight False
+bert.encoder.layer.1.intermediate.dense.bias False
+bert.encoder.layer.1.output.dense.weight False
+bert.encoder.layer.1.output.dense.bias False
+bert.encoder.layer.1.output.LayerNorm.weight False
+bert.encoder.layer.1.output.LayerNorm.bias False
+bert.encoder.layer.2.attention.self.query.weight False
+bert.encoder.layer.2.attention.self.query.bias False
+bert.encoder.layer.2.attention.self.key.weight False
+bert.encoder.layer.2.attention.self.key.bias False
+bert.encoder.layer.2.attention.self.value.weight False
+bert.encoder.layer.2.attention.self.value.bias False
+bert.encoder.layer.2.attention.output.dense.weight False
+bert.encoder.layer.2.attention.output.dense.bias False
+bert.encoder.layer.2.attention.output.LayerNorm.weight False
+bert.encoder.layer.2.attention.output.LayerNorm.bias False
+bert.encoder.layer.2.intermediate.dense.weight False
+bert.encoder.layer.2.intermediate.dense.bias False
+bert.encoder.layer.2.output.dense.weight False
+bert.encoder.layer.2.output.dense.bias False
+bert.encoder.layer.2.output.LayerNorm.weight False
+bert.encoder.layer.2.output.LayerNorm.bias False
+bert.encoder.layer.3.attention.self.query.weight False
+bert.encoder.layer.3.attention.self.query.bias False
+bert.encoder.layer.3.attention.self.key.weight False
+bert.encoder.layer.3.attention.self.key.bias False
+bert.encoder.layer.3.attention.self.value.weight False
+bert.encoder.layer.3.attention.self.value.bias False
+bert.encoder.layer.3.attention.output.dense.weight False
+bert.encoder.layer.3.attention.output.dense.bias False
+bert.encoder.layer.3.attention.output.LayerNorm.weight False
+bert.encoder.layer.3.attention.output.LayerNorm.bias False
+bert.encoder.layer.3.intermediate.dense.weight False
+bert.encoder.layer.3.intermediate.dense.bias False
+bert.encoder.layer.3.output.dense.weight False
+bert.encoder.layer.3.output.dense.bias False
+bert.encoder.layer.3.output.LayerNorm.weight False
+bert.encoder.layer.3.output.LayerNorm.bias False
+bert.encoder.layer.4.attention.self.query.weight False
+bert.encoder.layer.4.attention.self.query.bias False
+bert.encoder.layer.4.attention.self.key.weight False
+bert.encoder.layer.4.attention.self.key.bias False
+bert.encoder.layer.4.attention.self.value.weight False
+bert.encoder.layer.4.attention.self.value.bias False
+bert.encoder.layer.4.attention.output.dense.weight False
+bert.encoder.layer.4.attention.output.dense.bias False
+bert.encoder.layer.4.attention.output.LayerNorm.weight False
+bert.encoder.layer.4.attention.output.LayerNorm.bias False
+bert.encoder.layer.4.intermediate.dense.weight False
+bert.encoder.layer.4.intermediate.dense.bias False
+bert.encoder.layer.4.output.dense.weight False
+bert.encoder.layer.4.output.dense.bias False
+bert.encoder.layer.4.output.LayerNorm.weight False
+bert.encoder.layer.4.output.LayerNorm.bias False
+bert.encoder.layer.5.attention.self.query.weight False
+bert.encoder.layer.5.attention.self.query.bias False
+bert.encoder.layer.5.attention.self.key.weight False
+bert.encoder.layer.5.attention.self.key.bias False
+bert.encoder.layer.5.attention.self.value.weight False
+bert.encoder.layer.5.attention.self.value.bias False
+bert.encoder.layer.5.attention.output.dense.weight False
+bert.encoder.layer.5.attention.output.dense.bias False
+bert.encoder.layer.5.attention.output.LayerNorm.weight False
+bert.encoder.layer.5.attention.output.LayerNorm.bias False
+bert.encoder.layer.5.intermediate.dense.weight False
+bert.encoder.layer.5.intermediate.dense.bias False
+bert.encoder.layer.5.output.dense.weight False
+bert.encoder.layer.5.output.dense.bias False
+bert.encoder.layer.5.output.LayerNorm.weight False
+bert.encoder.layer.5.output.LayerNorm.bias False
+bert.encoder.layer.6.attention.self.query.weight False
+bert.encoder.layer.6.attention.self.query.bias False
+bert.encoder.layer.6.attention.self.key.weight False
+bert.encoder.layer.6.attention.self.key.bias False
+bert.encoder.layer.6.attention.self.value.weight False
+bert.encoder.layer.6.attention.self.value.bias False
+bert.encoder.layer.6.attention.output.dense.weight False
+bert.encoder.layer.6.attention.output.dense.bias False
+bert.encoder.layer.6.attention.output.LayerNorm.weight False
+bert.encoder.layer.6.attention.output.LayerNorm.bias False
+bert.encoder.layer.6.intermediate.dense.weight False
+bert.encoder.layer.6.intermediate.dense.bias False
+bert.encoder.layer.6.output.dense.weight False
+bert.encoder.layer.6.output.dense.bias False
+bert.encoder.layer.6.output.LayerNorm.weight False
+bert.encoder.layer.6.output.LayerNorm.bias False
+bert.encoder.layer.7.attention.self.query.weight False
+bert.encoder.layer.7.attention.self.query.bias False
+bert.encoder.layer.7.attention.self.key.weight False
+bert.encoder.layer.7.attention.self.key.bias False
+bert.encoder.layer.7.attention.self.value.weight False
+bert.encoder.layer.7.attention.self.value.bias False
+bert.encoder.layer.7.attention.output.dense.weight False
+bert.encoder.layer.7.attention.output.dense.bias False
+bert.encoder.layer.7.attention.output.LayerNorm.weight False
+bert.encoder.layer.7.attention.output.LayerNorm.bias False
+bert.encoder.layer.7.intermediate.dense.weight False
+bert.encoder.layer.7.intermediate.dense.bias False
+bert.encoder.layer.7.output.dense.weight False
+bert.encoder.layer.7.output.dense.bias False
+bert.encoder.layer.7.output.LayerNorm.weight False
+bert.encoder.layer.7.output.LayerNorm.bias False
+bert.encoder.layer.8.attention.self.query.weight False
+bert.encoder.layer.8.attention.self.query.bias False
+bert.encoder.layer.8.attention.self.key.weight False
+bert.encoder.layer.8.attention.self.key.bias False
+bert.encoder.layer.8.attention.self.value.weight False
+bert.encoder.layer.8.attention.self.value.bias False
+bert.encoder.layer.8.attention.output.dense.weight False
+bert.encoder.layer.8.attention.output.dense.bias False
+bert.encoder.layer.8.attention.output.LayerNorm.weight False
+bert.encoder.layer.8.attention.output.LayerNorm.bias False
+bert.encoder.layer.8.intermediate.dense.weight False
+bert.encoder.layer.8.intermediate.dense.bias False
+bert.encoder.layer.8.output.dense.weight False
+bert.encoder.layer.8.output.dense.bias False
+bert.encoder.layer.8.output.LayerNorm.weight False
+bert.encoder.layer.8.output.LayerNorm.bias False
+bert.encoder.layer.9.attention.self.query.weight False
+bert.encoder.layer.9.attention.self.query.bias False
+bert.encoder.layer.9.attention.self.key.weight False
+bert.encoder.layer.9.attention.self.key.bias False
+bert.encoder.layer.9.attention.self.value.weight False
+bert.encoder.layer.9.attention.self.value.bias False
+bert.encoder.layer.9.attention.output.dense.weight False
+bert.encoder.layer.9.attention.output.dense.bias False
+bert.encoder.layer.9.attention.output.LayerNorm.weight False
+bert.encoder.layer.9.attention.output.LayerNorm.bias False
+bert.encoder.layer.9.intermediate.dense.weight False
+bert.encoder.layer.9.intermediate.dense.bias False
+bert.encoder.layer.9.output.dense.weight False
+bert.encoder.layer.9.output.dense.bias False
+bert.encoder.layer.9.output.LayerNorm.weight False
+bert.encoder.layer.9.output.LayerNorm.bias False
+bert.encoder.layer.10.attention.self.query.weight False
+bert.encoder.layer.10.attention.self.query.bias False
+bert.encoder.layer.10.attention.self.key.weight False
+bert.encoder.layer.10.attention.self.key.bias False
+bert.encoder.layer.10.attention.self.value.weight False
+bert.encoder.layer.10.attention.self.value.bias False
+bert.encoder.layer.10.attention.output.dense.weight False
+bert.encoder.layer.10.attention.output.dense.bias False
+bert.encoder.layer.10.attention.output.LayerNorm.weight False
+bert.encoder.layer.10.attention.output.LayerNorm.bias False
+bert.encoder.layer.10.intermediate.dense.weight False
+bert.encoder.layer.10.intermediate.dense.bias False
+bert.encoder.layer.10.output.dense.weight False
+bert.encoder.layer.10.output.dense.bias False
+bert.encoder.layer.10.output.LayerNorm.weight False
+bert.encoder.layer.10.output.LayerNorm.bias False
+bert.encoder.layer.11.attention.self.query.weight False
+bert.encoder.layer.11.attention.self.query.bias False
+bert.encoder.layer.11.attention.self.key.weight False
+bert.encoder.layer.11.attention.self.key.bias False
+bert.encoder.layer.11.attention.self.value.weight False
+bert.encoder.layer.11.attention.self.value.bias False
+bert.encoder.layer.11.attention.output.dense.weight False
+bert.encoder.layer.11.attention.output.dense.bias False
+bert.encoder.layer.11.attention.output.LayerNorm.weight False
+bert.encoder.layer.11.attention.output.LayerNorm.bias False
+bert.encoder.layer.11.intermediate.dense.weight False
+bert.encoder.layer.11.intermediate.dense.bias False
+bert.encoder.layer.11.output.dense.weight False
+bert.encoder.layer.11.output.dense.bias False
+bert.encoder.layer.11.output.LayerNorm.weight False
+bert.encoder.layer.11.output.LayerNorm.bias False
+bert.pooler.dense.weight False
+bert.pooler.dense.bias False
+classifier.weight True
+classifier.bias True
+
+t_total is 690
+
+
+Epoch [0]:
+Training:
+Average incurred loss: 0.532  
+Average sample loss: 0.513  
+Average acc: 0.795  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 264]:	loss = 0.582  exp loss = 0.800  adjusted loss = 0.800  adv prob = 0.174172   acc = 0.784
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 253]:	loss = 0.179  exp loss = 0.206  adjusted loss = 0.206  adv prob = 0.141800   acc = 0.957
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 266]:	loss = 0.470  exp loss = 0.350  adjusted loss = 0.350  adv prob = 0.162845   acc = 0.846
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 249]:	loss = 0.449  exp loss = 0.467  adjusted loss = 0.467  adv prob = 0.158132   acc = 0.843
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 273]:	loss = 0.537  exp loss = 0.563  adjusted loss = 0.563  adv prob = 0.168027   acc = 0.769
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 295]:	loss = 0.912  exp loss = 0.900  adjusted loss = 0.900  adv prob = 0.195024   acc = 0.603
+Average incurred loss: 0.495  
+Average sample loss: 0.517  
+Average acc: 0.807  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 280]:	loss = 0.494  exp loss = 0.357  adjusted loss = 0.357  adv prob = 0.171419   acc = 0.807
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 270]:	loss = 0.103  exp loss = 0.110  adjusted loss = 0.110  adv prob = 0.114641   acc = 0.970
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 257]:	loss = 0.427  exp loss = 0.475  adjusted loss = 0.475  adv prob = 0.153865   acc = 0.860
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 280]:	loss = 0.575  exp loss = 0.501  adjusted loss = 0.501  adv prob = 0.159883   acc = 0.804
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 264]:	loss = 0.527  exp loss = 0.424  adjusted loss = 0.424  adv prob = 0.170437   acc = 0.788
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 249]:	loss = 0.869  exp loss = 0.776  adjusted loss = 0.776  adv prob = 0.229754   acc = 0.602
+Average incurred loss: 0.477  
+Average sample loss: 0.507  
+Average acc: 0.803  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 82]:	loss = 0.533  exp loss = 0.423  adjusted loss = 0.423  adv prob = 0.171803   acc = 0.805
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 87]:	loss = 0.129  exp loss = 0.101  adjusted loss = 0.101  adv prob = 0.108129   acc = 0.943
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 75]:	loss = 0.397  exp loss = 0.460  adjusted loss = 0.460  adv prob = 0.151416   acc = 0.867
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 84]:	loss = 0.526  exp loss = 0.429  adjusted loss = 0.429  adv prob = 0.158230   acc = 0.786
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 80]:	loss = 0.495  exp loss = 0.433  adjusted loss = 0.433  adv prob = 0.169715   acc = 0.812
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 70]:	loss = 0.850  exp loss = 0.793  adjusted loss = 0.793  adv prob = 0.240707   acc = 0.571
+
+Validation:
+Average incurred loss: 0.272  
+Average sample loss: 0.318  
+Average acc: 0.906  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 79699]:	loss = 0.306  exp loss = 0.498  adjusted loss = 0.498  adv prob = 0.064989   acc = 0.893
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 15179]:	loss = 0.097  exp loss = 0.032  adjusted loss = 0.032  adv prob = 0.000000   acc = 0.972
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 93712]:	loss = 0.205  exp loss = 0.218  adjusted loss = 0.218  adv prob = 0.000007   acc = 0.938
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 1521]:	loss = 0.217  exp loss = 0.107  adjusted loss = 0.107  adv prob = 0.000000   acc = 0.942
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 92672]:	loss = 0.336  exp loss = 0.366  adjusted loss = 0.366  adv prob = 0.935004   acc = 0.876
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 2176]:	loss = 0.448  exp loss = 0.479  adjusted loss = 0.479  adv prob = 0.000000   acc = 0.827
+Current lr: 0.000017
+Current lr: 0.000017
+Current validation accuracy: 0.8272055983543396
+Best model saved at epoch 0
+
+
+Epoch [1]:
+Training:
+Average incurred loss: 0.490  
+Average sample loss: 0.561  
+Average acc: 0.804  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 263]:	loss = 0.559  exp loss = 0.619  adjusted loss = 0.619  adv prob = 0.173552   acc = 0.787
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 295]:	loss = 0.189  exp loss = 0.181  adjusted loss = 0.181  adv prob = 0.089303   acc = 0.942
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 289]:	loss = 0.363  exp loss = 0.364  adjusted loss = 0.364  adv prob = 0.136713   acc = 0.837
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 241]:	loss = 0.525  exp loss = 0.516  adjusted loss = 0.516  adv prob = 0.152549   acc = 0.801
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 272]:	loss = 0.537  exp loss = 0.570  adjusted loss = 0.570  adv prob = 0.168045   acc = 0.768
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 240]:	loss = 0.847  exp loss = 0.812  adjusted loss = 0.812  adv prob = 0.279838   acc = 0.658
+Average incurred loss: 0.469  
+Average sample loss: 0.554  
+Average acc: 0.824  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 262]:	loss = 0.558  exp loss = 0.394  adjusted loss = 0.394  adv prob = 0.172803   acc = 0.794
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 260]:	loss = 0.124  exp loss = 0.091  adjusted loss = 0.091  adv prob = 0.071705   acc = 0.965
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 290]:	loss = 0.344  exp loss = 0.386  adjusted loss = 0.386  adv prob = 0.125965   acc = 0.866
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 284]:	loss = 0.557  exp loss = 0.542  adjusted loss = 0.542  adv prob = 0.151538   acc = 0.810
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 260]:	loss = 0.460  exp loss = 0.432  adjusted loss = 0.432  adv prob = 0.157657   acc = 0.835
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 244]:	loss = 0.797  exp loss = 0.874  adjusted loss = 0.874  adv prob = 0.320331   acc = 0.660
+Average incurred loss: 0.506  
+Average sample loss: 0.565  
+Average acc: 0.785  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 80]:	loss = 0.798  exp loss = 0.712  adjusted loss = 0.712  adv prob = 0.178691   acc = 0.675
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 87]:	loss = 0.139  exp loss = 0.104  adjusted loss = 0.104  adv prob = 0.067120   acc = 0.966
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 70]:	loss = 0.250  exp loss = 0.268  adjusted loss = 0.268  adv prob = 0.119792   acc = 0.929
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 84]:	loss = 0.790  exp loss = 0.765  adjusted loss = 0.765  adv prob = 0.156027   acc = 0.679
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 73]:	loss = 0.364  exp loss = 0.305  adjusted loss = 0.305  adv prob = 0.151670   acc = 0.849
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 84]:	loss = 0.663  exp loss = 0.675  adjusted loss = 0.675  adv prob = 0.326699   acc = 0.631
+
+Validation:
+Average incurred loss: 0.276  
+Average sample loss: 0.323  
+Average acc: 0.905  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 79699]:	loss = 0.341  exp loss = 0.530  adjusted loss = 0.530  adv prob = 0.946255   acc = 0.880
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 15179]:	loss = 0.120  exp loss = 0.042  adjusted loss = 0.042  adv prob = 0.000000   acc = 0.965
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 93712]:	loss = 0.212  exp loss = 0.227  adjusted loss = 0.227  adv prob = 0.000008   acc = 0.936
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 1521]:	loss = 0.227  exp loss = 0.117  adjusted loss = 0.117  adv prob = 0.000000   acc = 0.940
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 92672]:	loss = 0.309  exp loss = 0.339  adjusted loss = 0.339  adv prob = 0.053737   acc = 0.887
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 2176]:	loss = 0.395  exp loss = 0.412  adjusted loss = 0.412  adv prob = 0.000000   acc = 0.852
+Current lr: 0.000013
+Current lr: 0.000013
+Current validation accuracy: 0.8524819612503052
+Best model saved at epoch 1
+
+
+Epoch [2]:
+Training:
+Average incurred loss: 0.445  
+Average sample loss: 0.526  
+Average acc: 0.828  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 264]:	loss = 0.599  exp loss = 0.584  adjusted loss = 0.584  adv prob = 0.186010   acc = 0.769
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 268]:	loss = 0.201  exp loss = 0.237  adjusted loss = 0.237  adv prob = 0.056364   acc = 0.951
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 277]:	loss = 0.347  exp loss = 0.360  adjusted loss = 0.360  adv prob = 0.109624   acc = 0.877
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 268]:	loss = 0.421  exp loss = 0.398  adjusted loss = 0.398  adv prob = 0.146190   acc = 0.851
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 243]:	loss = 0.403  exp loss = 0.508  adjusted loss = 0.508  adv prob = 0.144998   acc = 0.848
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 280]:	loss = 0.693  exp loss = 0.614  adjusted loss = 0.614  adv prob = 0.356813   acc = 0.679
+Average incurred loss: 0.496  
+Average sample loss: 0.547  
+Average acc: 0.806  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 270]:	loss = 0.614  exp loss = 0.568  adjusted loss = 0.568  adv prob = 0.192671   acc = 0.759
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 273]:	loss = 0.235  exp loss = 0.342  adjusted loss = 0.342  adv prob = 0.048764   acc = 0.934
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 253]:	loss = 0.447  exp loss = 0.539  adjusted loss = 0.539  adv prob = 0.104543   acc = 0.830
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 266]:	loss = 0.614  exp loss = 0.599  adjusted loss = 0.599  adv prob = 0.153559   acc = 0.801
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 274]:	loss = 0.481  exp loss = 0.429  adjusted loss = 0.429  adv prob = 0.140821   acc = 0.788
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 264]:	loss = 0.590  exp loss = 0.498  adjusted loss = 0.498  adv prob = 0.359641   acc = 0.723
+Average incurred loss: 0.480  
+Average sample loss: 0.499  
+Average acc: 0.822  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 86]:	loss = 0.721  exp loss = 0.673  adjusted loss = 0.673  adv prob = 0.198551   acc = 0.756
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 68]:	loss = 0.316  exp loss = 0.259  adjusted loss = 0.259  adv prob = 0.047167   acc = 0.926
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 78]:	loss = 0.391  exp loss = 0.436  adjusted loss = 0.436  adv prob = 0.102641   acc = 0.833
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 81]:	loss = 0.382  exp loss = 0.480  adjusted loss = 0.480  adv prob = 0.151421   acc = 0.877
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 80]:	loss = 0.466  exp loss = 0.388  adjusted loss = 0.388  adv prob = 0.138806   acc = 0.788
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 85]:	loss = 0.556  exp loss = 0.507  adjusted loss = 0.507  adv prob = 0.361414   acc = 0.776
+
+Validation:
+Average incurred loss: 0.281  
+Average sample loss: 0.348  
+Average acc: 0.904  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 79699]:	loss = 0.367  exp loss = 0.554  adjusted loss = 0.554  adv prob = 0.999505   acc = 0.870
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 15179]:	loss = 0.139  exp loss = 0.052  adjusted loss = 0.052  adv prob = 0.000000   acc = 0.957
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 93712]:	loss = 0.228  exp loss = 0.245  adjusted loss = 0.245  adv prob = 0.000004   acc = 0.929
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 1521]:	loss = 0.248  exp loss = 0.135  adjusted loss = 0.135  adv prob = 0.000000   acc = 0.932
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 92672]:	loss = 0.281  exp loss = 0.310  adjusted loss = 0.310  adv prob = 0.000491   acc = 0.898
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 2176]:	loss = 0.350  exp loss = 0.369  adjusted loss = 0.369  adv prob = 0.000000   acc = 0.875
+Current lr: 0.000010
+Current lr: 0.000010
+Current validation accuracy: 0.8704503178596497
+Best model saved at epoch 2
+
+
+Epoch [3]:
+Training:
+Average incurred loss: 0.476  
+Average sample loss: 0.557  
+Average acc: 0.810  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 260]:	loss = 0.644  exp loss = 0.646  adjusted loss = 0.646  adv prob = 0.206838   acc = 0.758
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 267]:	loss = 0.223  exp loss = 0.214  adjusted loss = 0.214  adv prob = 0.039702   acc = 0.918
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 258]:	loss = 0.384  exp loss = 0.461  adjusted loss = 0.461  adv prob = 0.093033   acc = 0.857
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 269]:	loss = 0.554  exp loss = 0.506  adjusted loss = 0.506  adv prob = 0.149704   acc = 0.784
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 277]:	loss = 0.422  exp loss = 0.499  adjusted loss = 0.499  adv prob = 0.131317   acc = 0.830
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 269]:	loss = 0.633  exp loss = 0.651  adjusted loss = 0.651  adv prob = 0.379406   acc = 0.714
+Average incurred loss: 0.456  
+Average sample loss: 0.560  
+Average acc: 0.822  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 293]:	loss = 0.545  exp loss = 0.576  adjusted loss = 0.576  adv prob = 0.206732   acc = 0.799
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 249]:	loss = 0.147  exp loss = 0.142  adjusted loss = 0.142  adv prob = 0.032175   acc = 0.964
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 259]:	loss = 0.445  exp loss = 0.413  adjusted loss = 0.413  adv prob = 0.089486   acc = 0.842
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 290]:	loss = 0.498  exp loss = 0.468  adjusted loss = 0.468  adv prob = 0.146488   acc = 0.814
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 270]:	loss = 0.405  exp loss = 0.453  adjusted loss = 0.453  adv prob = 0.121921   acc = 0.811
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 239]:	loss = 0.686  exp loss = 0.631  adjusted loss = 0.631  adv prob = 0.403197   acc = 0.703
+Average incurred loss: 0.484  
+Average sample loss: 0.535  
+Average acc: 0.805  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 92]:	loss = 0.525  exp loss = 0.609  adjusted loss = 0.609  adv prob = 0.207387   acc = 0.761
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 77]:	loss = 0.348  exp loss = 0.271  adjusted loss = 0.271  adv prob = 0.031232   acc = 0.909
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 88]:	loss = 0.358  exp loss = 0.378  adjusted loss = 0.378  adv prob = 0.086915   acc = 0.852
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 80]:	loss = 0.661  exp loss = 0.569  adjusted loss = 0.569  adv prob = 0.148990   acc = 0.813
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 80]:	loss = 0.440  exp loss = 0.472  adjusted loss = 0.472  adv prob = 0.120333   acc = 0.825
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 61]:	loss = 0.604  exp loss = 0.524  adjusted loss = 0.524  adv prob = 0.405143   acc = 0.639
+
+Validation:
+Average incurred loss: 0.286  
+Average sample loss: 0.366  
+Average acc: 0.902  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 79699]:	loss = 0.385  exp loss = 0.570  adjusted loss = 0.570  adv prob = 0.999978   acc = 0.863
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 15179]:	loss = 0.155  exp loss = 0.060  adjusted loss = 0.060  adv prob = 0.000000   acc = 0.951
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 93712]:	loss = 0.244  exp loss = 0.262  adjusted loss = 0.262  adv prob = 0.000003   acc = 0.923
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 1521]:	loss = 0.269  exp loss = 0.154  adjusted loss = 0.154  adv prob = 0.000000   acc = 0.922
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 92672]:	loss = 0.263  exp loss = 0.289  adjusted loss = 0.289  adv prob = 0.000019   acc = 0.906
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 2176]:	loss = 0.320  exp loss = 0.342  adjusted loss = 0.342  adv prob = 0.000000   acc = 0.886
+Current lr: 0.000007
+Current lr: 0.000007
+Current validation accuracy: 0.8630490899085999
+
+
+Epoch [4]:
+Training:
+Average incurred loss: 0.487  
+Average sample loss: 0.544  
+Average acc: 0.801  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 287]:	loss = 0.539  exp loss = 0.664  adjusted loss = 0.664  adv prob = 0.205813   acc = 0.767
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 253]:	loss = 0.216  exp loss = 0.193  adjusted loss = 0.193  adv prob = 0.026711   acc = 0.925
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 251]:	loss = 0.542  exp loss = 0.580  adjusted loss = 0.580  adv prob = 0.086832   acc = 0.793
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 243]:	loss = 0.616  exp loss = 0.631  adjusted loss = 0.631  adv prob = 0.158029   acc = 0.745
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 290]:	loss = 0.403  exp loss = 0.446  adjusted loss = 0.446  adv prob = 0.112228   acc = 0.866
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 276]:	loss = 0.602  exp loss = 0.604  adjusted loss = 0.604  adv prob = 0.410386   acc = 0.714
+Average incurred loss: 0.501  
+Average sample loss: 0.546  
+Average acc: 0.791  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 248]:	loss = 0.628  exp loss = 0.781  adjusted loss = 0.781  adv prob = 0.217575   acc = 0.738
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 261]:	loss = 0.279  exp loss = 0.241  adjusted loss = 0.241  adv prob = 0.023338   acc = 0.908
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 230]:	loss = 0.421  exp loss = 0.414  adjusted loss = 0.414  adv prob = 0.082570   acc = 0.817
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 311]:	loss = 0.621  exp loss = 0.657  adjusted loss = 0.657  adv prob = 0.163659   acc = 0.762
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 268]:	loss = 0.483  exp loss = 0.474  adjusted loss = 0.474  adv prob = 0.108145   acc = 0.784
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 282]:	loss = 0.546  exp loss = 0.698  adjusted loss = 0.698  adv prob = 0.404714   acc = 0.748
+Average incurred loss: 0.470  
+Average sample loss: 0.577  
+Average acc: 0.816  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 88]:	loss = 0.660  exp loss = 0.678  adjusted loss = 0.678  adv prob = 0.219266   acc = 0.761
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 80]:	loss = 0.234  exp loss = 0.205  adjusted loss = 0.205  adv prob = 0.022134   acc = 0.925
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 75]:	loss = 0.288  exp loss = 0.431  adjusted loss = 0.431  adv prob = 0.079727   acc = 0.893
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 78]:	loss = 0.642  exp loss = 0.634  adjusted loss = 0.634  adv prob = 0.167658   acc = 0.744
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 75]:	loss = 0.334  exp loss = 0.353  adjusted loss = 0.353  adv prob = 0.104009   acc = 0.880
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 82]:	loss = 0.624  exp loss = 0.668  adjusted loss = 0.668  adv prob = 0.407205   acc = 0.707
+
+Validation:
+Average incurred loss: 0.288  
+Average sample loss: 0.377  
+Average acc: 0.901  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 79699]:	loss = 0.396  exp loss = 0.580  adjusted loss = 0.580  adv prob = 0.999994   acc = 0.858
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 15179]:	loss = 0.164  exp loss = 0.065  adjusted loss = 0.065  adv prob = 0.000000   acc = 0.947
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 93712]:	loss = 0.249  exp loss = 0.267  adjusted loss = 0.267  adv prob = 0.000002   acc = 0.921
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 1521]:	loss = 0.275  exp loss = 0.160  adjusted loss = 0.160  adv prob = 0.000000   acc = 0.920
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 92672]:	loss = 0.256  exp loss = 0.282  adjusted loss = 0.282  adv prob = 0.000004   acc = 0.909
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 2176]:	loss = 0.307  exp loss = 0.330  adjusted loss = 0.330  adv prob = 0.000000   acc = 0.892
+Current lr: 0.000003
+Current lr: 0.000003
+Current validation accuracy: 0.8582910895347595
+
+
+Epoch [5]:
+Training:
+Average incurred loss: 0.500  
+Average sample loss: 0.557  
+Average acc: 0.804  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 280]:	loss = 0.633  exp loss = 0.685  adjusted loss = 0.685  adv prob = 0.227877   acc = 0.736
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 256]:	loss = 0.249  exp loss = 0.256  adjusted loss = 0.256  adv prob = 0.018876   acc = 0.938
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 279]:	loss = 0.459  exp loss = 0.435  adjusted loss = 0.435  adv prob = 0.075586   acc = 0.803
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 260]:	loss = 0.700  exp loss = 0.785  adjusted loss = 0.785  adv prob = 0.182078   acc = 0.731
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 271]:	loss = 0.439  exp loss = 0.532  adjusted loss = 0.532  adv prob = 0.098454   acc = 0.838
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 254]:	loss = 0.512  exp loss = 0.485  adjusted loss = 0.485  adv prob = 0.397129   acc = 0.787
+Average incurred loss: 0.496  
+Average sample loss: 0.549  
+Average acc: 0.804  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 264]:	loss = 0.614  exp loss = 0.640  adjusted loss = 0.640  adv prob = 0.235549   acc = 0.758
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 270]:	loss = 0.290  exp loss = 0.485  adjusted loss = 0.485  adv prob = 0.016681   acc = 0.889
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 264]:	loss = 0.593  exp loss = 0.532  adjusted loss = 0.532  adv prob = 0.077918   acc = 0.784
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 272]:	loss = 0.604  exp loss = 0.556  adjusted loss = 0.556  adv prob = 0.191846   acc = 0.761
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 280]:	loss = 0.363  exp loss = 0.318  adjusted loss = 0.318  adv prob = 0.088849   acc = 0.868
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 250]:	loss = 0.526  exp loss = 0.548  adjusted loss = 0.548  adv prob = 0.389157   acc = 0.756
+Average incurred loss: 0.567  
+Average sample loss: 0.676  
+Average acc: 0.770  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 78]:	loss = 1.046  exp loss = 0.930  adjusted loss = 0.930  adv prob = 0.252486   acc = 0.603
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 82]:	loss = 0.323  exp loss = 0.406  adjusted loss = 0.406  adv prob = 0.015844   acc = 0.866
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 67]:	loss = 0.403  exp loss = 0.432  adjusted loss = 0.432  adv prob = 0.074824   acc = 0.851
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 84]:	loss = 0.637  exp loss = 0.603  adjusted loss = 0.603  adv prob = 0.190158   acc = 0.750
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 84]:	loss = 0.463  exp loss = 0.428  adjusted loss = 0.428  adv prob = 0.086401   acc = 0.821
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 83]:	loss = 0.524  exp loss = 0.511  adjusted loss = 0.511  adv prob = 0.380287   acc = 0.735
+
+Validation:
+Average incurred loss: 0.289  
+Average sample loss: 0.380  
+Average acc: 0.900  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 79699]:	loss = 0.399  exp loss = 0.584  adjusted loss = 0.584  adv prob = 0.999996   acc = 0.857
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 15179]:	loss = 0.166  exp loss = 0.067  adjusted loss = 0.067  adv prob = 0.000000   acc = 0.945
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 93712]:	loss = 0.248  exp loss = 0.266  adjusted loss = 0.266  adv prob = 0.000001   acc = 0.921
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 1521]:	loss = 0.274  exp loss = 0.159  adjusted loss = 0.159  adv prob = 0.000000   acc = 0.920
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 92672]:	loss = 0.256  exp loss = 0.282  adjusted loss = 0.282  adv prob = 0.000003   acc = 0.909
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 2176]:	loss = 0.305  exp loss = 0.328  adjusted loss = 0.328  adv prob = 0.000000   acc = 0.892
+Current lr: 0.000000
+Current lr: 0.000000
+Current validation accuracy: 0.8569741249084473
+
+Total Experiment Time: 8400.3s
+Finished with job 731 (seed=111)

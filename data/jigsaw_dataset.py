@@ -50,7 +50,7 @@ class JigsawDataset(ConfounderDataset):
         assert self.augment_data == False
         assert self.model in ["bert-base-cased", "bert-base-uncased"]
         
-        self.data_dir = os.path.join(self.root_dir, "civilcomments/data")
+        self.data_dir = os.path.join(self.root_dir, "jigsaw/data")
         if not os.path.exists(self.data_dir):
             raise ValueError(
                 f"{self.data_dir} does not exist yet. Please generate the dataset first."
@@ -63,6 +63,11 @@ class JigsawDataset(ConfounderDataset):
         self.metadata_df = pd.read_csv(
             os.path.join(self.data_dir, data_filename), index_col=0
         )
+        
+        # Asegurar texto válido (convierte NaN a '' y todo a str):
+        self.metadata_df['comment_text'] = self.metadata_df['comment_text'].fillna('').astype(str)
+        # (opcional) Si prefieres eliminar filas sin texto:
+        self.metadata_df = self.metadata_df[self.metadata_df['comment_text'].str.len() > 0].copy()
 
         # Get the y values
         self.y_array = (self.metadata_df[self.target_name].values >= 0.5).astype("long")
@@ -113,6 +118,10 @@ class JigsawDataset(ConfounderDataset):
         g = self.group_array[idx]
 
         text = self.text_array[idx]
+        text = self.text_array[idx]
+        # doble seguro por si algo “raro” se coló:
+        if not isinstance(text, str):
+            text = '' if pd.isna(text) else str(text)
         tokens = self.tokenizer(
             text,
             padding="max_length",

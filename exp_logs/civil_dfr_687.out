@@ -1,0 +1,373 @@
+
+
+
+
+
+ Using bert params 
+
+
+
+
+
+
+
+WARNING: You are using 'dfr/metadata_val_as_train.csv' instead of the default 'metadata.csv'.
+
+
+Dataset: jigsaw
+Shift type: confounder
+Wandb: False
+Project name: spurious
+Target name: toxicity
+Confounder names: ['identity_any']
+Up weight: 0
+Resume: False
+Finetune: True
+Normalize: False
+Recalculate groups: False
+Unfreeze: 0
+Restart layers: 0
+Minority fraction: None
+Imbalance ratio: None
+Fraction: 1.0
+Root dir: ../datasets
+Reweight groups: False
+Augment data: False
+Val fraction: 0.1
+Loss type: erm
+Alpha: 0.2
+Generalization adjustment: 0.0
+Sv dropout: 0.0
+Automatic adjustment: False
+Robust step size: 0.01
+Joint dro alpha: 1
+Use normalized loss: False
+Btl: False
+Hinge: False
+Model: bert-base-uncased
+Train from scratch: False
+Pretrained path: pretrained_models/civilcomments/erm_0.9_111.pth
+N epochs: 6
+Batch size: 16
+Lr: 1e-05
+Scheduler: False
+L1: 0.0
+Weight decay: 0.01
+Gamma: 0.1
+Minimum variational weight: 0
+Seed: 111
+Accum: 1
+Show progress: False
+Log dir: results/civilcomments/erm/model_outputs_111
+Log every: 50
+Save step: 10
+Save best: True
+Save last: True
+Use bert params: 1
+Num folds per sweep: 5
+Num sweeps: 4
+Q: 0.7
+Metadata csv name: dfr/metadata_val_as_train.csv
+Fold: None
+Metadata path: None
+Aug col: None
+Max grad norm: 1.0
+Adam epsilon: 1e-08
+Warmup steps: 0
+
+metadata_csv_name: dfr/metadata_val_as_train.csv
+Training Data...
+    toxicity = 0, identity_any = 0: n = 1967
+    toxicity = 0, identity_any = 1: n = 1967
+    toxicity = 1, identity_any = 0: n = 1967
+    toxicity = 1, identity_any = 1: n = 1967
+Validation Data...
+    toxicity = 0, identity_any = 0: n = 166026
+    toxicity = 0, identity_any = 1: n = 108687
+    toxicity = 1, identity_any = 0: n = 11940
+    toxicity = 1, identity_any = 1: n = 19696
+Test Data...
+    toxicity = 0, identity_any = 0: n = 72372
+    toxicity = 0, identity_any = 1: n = 46185
+    toxicity = 1, identity_any = 0: n = 6063
+    toxicity = 1, identity_any = 1: n = 9161
+Training
+n_classes = 2
+Loading pretrained model from: pretrained_models/civilcomments/erm_0.9_111.pth
+bert.embeddings.word_embeddings.weight False
+bert.embeddings.position_embeddings.weight False
+bert.embeddings.token_type_embeddings.weight False
+bert.embeddings.LayerNorm.weight False
+bert.embeddings.LayerNorm.bias False
+bert.encoder.layer.0.attention.self.query.weight False
+bert.encoder.layer.0.attention.self.query.bias False
+bert.encoder.layer.0.attention.self.key.weight False
+bert.encoder.layer.0.attention.self.key.bias False
+bert.encoder.layer.0.attention.self.value.weight False
+bert.encoder.layer.0.attention.self.value.bias False
+bert.encoder.layer.0.attention.output.dense.weight False
+bert.encoder.layer.0.attention.output.dense.bias False
+bert.encoder.layer.0.attention.output.LayerNorm.weight False
+bert.encoder.layer.0.attention.output.LayerNorm.bias False
+bert.encoder.layer.0.intermediate.dense.weight False
+bert.encoder.layer.0.intermediate.dense.bias False
+bert.encoder.layer.0.output.dense.weight False
+bert.encoder.layer.0.output.dense.bias False
+bert.encoder.layer.0.output.LayerNorm.weight False
+bert.encoder.layer.0.output.LayerNorm.bias False
+bert.encoder.layer.1.attention.self.query.weight False
+bert.encoder.layer.1.attention.self.query.bias False
+bert.encoder.layer.1.attention.self.key.weight False
+bert.encoder.layer.1.attention.self.key.bias False
+bert.encoder.layer.1.attention.self.value.weight False
+bert.encoder.layer.1.attention.self.value.bias False
+bert.encoder.layer.1.attention.output.dense.weight False
+bert.encoder.layer.1.attention.output.dense.bias False
+bert.encoder.layer.1.attention.output.LayerNorm.weight False
+bert.encoder.layer.1.attention.output.LayerNorm.bias False
+bert.encoder.layer.1.intermediate.dense.weight False
+bert.encoder.layer.1.intermediate.dense.bias False
+bert.encoder.layer.1.output.dense.weight False
+bert.encoder.layer.1.output.dense.bias False
+bert.encoder.layer.1.output.LayerNorm.weight False
+bert.encoder.layer.1.output.LayerNorm.bias False
+bert.encoder.layer.2.attention.self.query.weight False
+bert.encoder.layer.2.attention.self.query.bias False
+bert.encoder.layer.2.attention.self.key.weight False
+bert.encoder.layer.2.attention.self.key.bias False
+bert.encoder.layer.2.attention.self.value.weight False
+bert.encoder.layer.2.attention.self.value.bias False
+bert.encoder.layer.2.attention.output.dense.weight False
+bert.encoder.layer.2.attention.output.dense.bias False
+bert.encoder.layer.2.attention.output.LayerNorm.weight False
+bert.encoder.layer.2.attention.output.LayerNorm.bias False
+bert.encoder.layer.2.intermediate.dense.weight False
+bert.encoder.layer.2.intermediate.dense.bias False
+bert.encoder.layer.2.output.dense.weight False
+bert.encoder.layer.2.output.dense.bias False
+bert.encoder.layer.2.output.LayerNorm.weight False
+bert.encoder.layer.2.output.LayerNorm.bias False
+bert.encoder.layer.3.attention.self.query.weight False
+bert.encoder.layer.3.attention.self.query.bias False
+bert.encoder.layer.3.attention.self.key.weight False
+bert.encoder.layer.3.attention.self.key.bias False
+bert.encoder.layer.3.attention.self.value.weight False
+bert.encoder.layer.3.attention.self.value.bias False
+bert.encoder.layer.3.attention.output.dense.weight False
+bert.encoder.layer.3.attention.output.dense.bias False
+bert.encoder.layer.3.attention.output.LayerNorm.weight False
+bert.encoder.layer.3.attention.output.LayerNorm.bias False
+bert.encoder.layer.3.intermediate.dense.weight False
+bert.encoder.layer.3.intermediate.dense.bias False
+bert.encoder.layer.3.output.dense.weight False
+bert.encoder.layer.3.output.dense.bias False
+bert.encoder.layer.3.output.LayerNorm.weight False
+bert.encoder.layer.3.output.LayerNorm.bias False
+bert.encoder.layer.4.attention.self.query.weight False
+bert.encoder.layer.4.attention.self.query.bias False
+bert.encoder.layer.4.attention.self.key.weight False
+bert.encoder.layer.4.attention.self.key.bias False
+bert.encoder.layer.4.attention.self.value.weight False
+bert.encoder.layer.4.attention.self.value.bias False
+bert.encoder.layer.4.attention.output.dense.weight False
+bert.encoder.layer.4.attention.output.dense.bias False
+bert.encoder.layer.4.attention.output.LayerNorm.weight False
+bert.encoder.layer.4.attention.output.LayerNorm.bias False
+bert.encoder.layer.4.intermediate.dense.weight False
+bert.encoder.layer.4.intermediate.dense.bias False
+bert.encoder.layer.4.output.dense.weight False
+bert.encoder.layer.4.output.dense.bias False
+bert.encoder.layer.4.output.LayerNorm.weight False
+bert.encoder.layer.4.output.LayerNorm.bias False
+bert.encoder.layer.5.attention.self.query.weight False
+bert.encoder.layer.5.attention.self.query.bias False
+bert.encoder.layer.5.attention.self.key.weight False
+bert.encoder.layer.5.attention.self.key.bias False
+bert.encoder.layer.5.attention.self.value.weight False
+bert.encoder.layer.5.attention.self.value.bias False
+bert.encoder.layer.5.attention.output.dense.weight False
+bert.encoder.layer.5.attention.output.dense.bias False
+bert.encoder.layer.5.attention.output.LayerNorm.weight False
+bert.encoder.layer.5.attention.output.LayerNorm.bias False
+bert.encoder.layer.5.intermediate.dense.weight False
+bert.encoder.layer.5.intermediate.dense.bias False
+bert.encoder.layer.5.output.dense.weight False
+bert.encoder.layer.5.output.dense.bias False
+bert.encoder.layer.5.output.LayerNorm.weight False
+bert.encoder.layer.5.output.LayerNorm.bias False
+bert.encoder.layer.6.attention.self.query.weight False
+bert.encoder.layer.6.attention.self.query.bias False
+bert.encoder.layer.6.attention.self.key.weight False
+bert.encoder.layer.6.attention.self.key.bias False
+bert.encoder.layer.6.attention.self.value.weight False
+bert.encoder.layer.6.attention.self.value.bias False
+bert.encoder.layer.6.attention.output.dense.weight False
+bert.encoder.layer.6.attention.output.dense.bias False
+bert.encoder.layer.6.attention.output.LayerNorm.weight False
+bert.encoder.layer.6.attention.output.LayerNorm.bias False
+bert.encoder.layer.6.intermediate.dense.weight False
+bert.encoder.layer.6.intermediate.dense.bias False
+bert.encoder.layer.6.output.dense.weight False
+bert.encoder.layer.6.output.dense.bias False
+bert.encoder.layer.6.output.LayerNorm.weight False
+bert.encoder.layer.6.output.LayerNorm.bias False
+bert.encoder.layer.7.attention.self.query.weight False
+bert.encoder.layer.7.attention.self.query.bias False
+bert.encoder.layer.7.attention.self.key.weight False
+bert.encoder.layer.7.attention.self.key.bias False
+bert.encoder.layer.7.attention.self.value.weight False
+bert.encoder.layer.7.attention.self.value.bias False
+bert.encoder.layer.7.attention.output.dense.weight False
+bert.encoder.layer.7.attention.output.dense.bias False
+bert.encoder.layer.7.attention.output.LayerNorm.weight False
+bert.encoder.layer.7.attention.output.LayerNorm.bias False
+bert.encoder.layer.7.intermediate.dense.weight False
+bert.encoder.layer.7.intermediate.dense.bias False
+bert.encoder.layer.7.output.dense.weight False
+bert.encoder.layer.7.output.dense.bias False
+bert.encoder.layer.7.output.LayerNorm.weight False
+bert.encoder.layer.7.output.LayerNorm.bias False
+bert.encoder.layer.8.attention.self.query.weight False
+bert.encoder.layer.8.attention.self.query.bias False
+bert.encoder.layer.8.attention.self.key.weight False
+bert.encoder.layer.8.attention.self.key.bias False
+bert.encoder.layer.8.attention.self.value.weight False
+bert.encoder.layer.8.attention.self.value.bias False
+bert.encoder.layer.8.attention.output.dense.weight False
+bert.encoder.layer.8.attention.output.dense.bias False
+bert.encoder.layer.8.attention.output.LayerNorm.weight False
+bert.encoder.layer.8.attention.output.LayerNorm.bias False
+bert.encoder.layer.8.intermediate.dense.weight False
+bert.encoder.layer.8.intermediate.dense.bias False
+bert.encoder.layer.8.output.dense.weight False
+bert.encoder.layer.8.output.dense.bias False
+bert.encoder.layer.8.output.LayerNorm.weight False
+bert.encoder.layer.8.output.LayerNorm.bias False
+bert.encoder.layer.9.attention.self.query.weight False
+bert.encoder.layer.9.attention.self.query.bias False
+bert.encoder.layer.9.attention.self.key.weight False
+bert.encoder.layer.9.attention.self.key.bias False
+bert.encoder.layer.9.attention.self.value.weight False
+bert.encoder.layer.9.attention.self.value.bias False
+bert.encoder.layer.9.attention.output.dense.weight False
+bert.encoder.layer.9.attention.output.dense.bias False
+bert.encoder.layer.9.attention.output.LayerNorm.weight False
+bert.encoder.layer.9.attention.output.LayerNorm.bias False
+bert.encoder.layer.9.intermediate.dense.weight False
+bert.encoder.layer.9.intermediate.dense.bias False
+bert.encoder.layer.9.output.dense.weight False
+bert.encoder.layer.9.output.dense.bias False
+bert.encoder.layer.9.output.LayerNorm.weight False
+bert.encoder.layer.9.output.LayerNorm.bias False
+bert.encoder.layer.10.attention.self.query.weight False
+bert.encoder.layer.10.attention.self.query.bias False
+bert.encoder.layer.10.attention.self.key.weight False
+bert.encoder.layer.10.attention.self.key.bias False
+bert.encoder.layer.10.attention.self.value.weight False
+bert.encoder.layer.10.attention.self.value.bias False
+bert.encoder.layer.10.attention.output.dense.weight False
+bert.encoder.layer.10.attention.output.dense.bias False
+bert.encoder.layer.10.attention.output.LayerNorm.weight False
+bert.encoder.layer.10.attention.output.LayerNorm.bias False
+bert.encoder.layer.10.intermediate.dense.weight False
+bert.encoder.layer.10.intermediate.dense.bias False
+bert.encoder.layer.10.output.dense.weight False
+bert.encoder.layer.10.output.dense.bias False
+bert.encoder.layer.10.output.LayerNorm.weight False
+bert.encoder.layer.10.output.LayerNorm.bias False
+bert.encoder.layer.11.attention.self.query.weight False
+bert.encoder.layer.11.attention.self.query.bias False
+bert.encoder.layer.11.attention.self.key.weight False
+bert.encoder.layer.11.attention.self.key.bias False
+bert.encoder.layer.11.attention.self.value.weight False
+bert.encoder.layer.11.attention.self.value.bias False
+bert.encoder.layer.11.attention.output.dense.weight False
+bert.encoder.layer.11.attention.output.dense.bias False
+bert.encoder.layer.11.attention.output.LayerNorm.weight False
+bert.encoder.layer.11.attention.output.LayerNorm.bias False
+bert.encoder.layer.11.intermediate.dense.weight False
+bert.encoder.layer.11.intermediate.dense.bias False
+bert.encoder.layer.11.output.dense.weight False
+bert.encoder.layer.11.output.dense.bias False
+bert.encoder.layer.11.output.LayerNorm.weight False
+bert.encoder.layer.11.output.LayerNorm.bias False
+bert.pooler.dense.weight False
+bert.pooler.dense.bias False
+classifier.weight True
+classifier.bias True
+
+t_total is 2952
+
+
+Epoch [0]:
+Training:
+Average incurred loss: 0.667  
+Average sample loss: 0.667  
+Average acc: 0.761  
+  toxicity = 0, identity_any = 0  [n = 205]:	loss = 0.073  exp loss = 0.059  adjusted loss = 0.059  adv prob = 0.250000   acc = 0.966
+  toxicity = 0, identity_any = 1  [n = 203]:	loss = 0.086  exp loss = 0.059  adjusted loss = 0.059  adv prob = 0.250000   acc = 0.961
+  toxicity = 1, identity_any = 0  [n = 199]:	loss = 1.260  exp loss = 1.208  adjusted loss = 1.208  adv prob = 0.250000   acc = 0.573
+  toxicity = 1, identity_any = 1  [n = 193]:	loss = 1.298  exp loss = 1.049  adjusted loss = 1.049  adv prob = 0.250000   acc = 0.528
+Average incurred loss: 0.544  
+Average sample loss: 0.544  
+Average acc: 0.802  
+  toxicity = 0, identity_any = 0  [n = 206]:	loss = 0.025  exp loss = 0.011  adjusted loss = 0.011  adv prob = 0.250000   acc = 0.995
+  toxicity = 0, identity_any = 1  [n = 197]:	loss = 0.088  exp loss = 0.113  adjusted loss = 0.113  adv prob = 0.250000   acc = 0.970
+  toxicity = 1, identity_any = 0  [n = 197]:	loss = 1.168  exp loss = 0.742  adjusted loss = 0.742  adv prob = 0.250000   acc = 0.604
+  toxicity = 1, identity_any = 1  [n = 200]:	loss = 0.912  exp loss = 0.938  adjusted loss = 0.938  adv prob = 0.250000   acc = 0.635
+Average incurred loss: 0.473  
+Average sample loss: 0.473  
+Average acc: 0.817  
+  toxicity = 0, identity_any = 0  [n = 205]:	loss = 0.053  exp loss = 0.045  adjusted loss = 0.045  adv prob = 0.250000   acc = 0.980
+  toxicity = 0, identity_any = 1  [n = 197]:	loss = 0.097  exp loss = 0.095  adjusted loss = 0.095  adv prob = 0.250000   acc = 0.954
+  toxicity = 1, identity_any = 0  [n = 211]:	loss = 0.921  exp loss = 0.778  adjusted loss = 0.778  adv prob = 0.250000   acc = 0.673
+  toxicity = 1, identity_any = 1  [n = 187]:	loss = 0.827  exp loss = 0.570  adjusted loss = 0.570  adv prob = 0.250000   acc = 0.658
+Average incurred loss: 0.493  
+Average sample loss: 0.493  
+Average acc: 0.794  
+  toxicity = 0, identity_any = 0  [n = 196]:	loss = 0.060  exp loss = 0.067  adjusted loss = 0.067  adv prob = 0.250000   acc = 0.969
+  toxicity = 0, identity_any = 1  [n = 212]:	loss = 0.171  exp loss = 0.141  adjusted loss = 0.141  adv prob = 0.250000   acc = 0.929
+  toxicity = 1, identity_any = 0  [n = 193]:	loss = 0.967  exp loss = 0.849  adjusted loss = 0.849  adv prob = 0.250000   acc = 0.611
+  toxicity = 1, identity_any = 1  [n = 199]:	loss = 0.802  exp loss = 0.723  adjusted loss = 0.723  adv prob = 0.250000   acc = 0.653
+Average incurred loss: 0.452  
+Average sample loss: 0.452  
+Average acc: 0.822  
+  toxicity = 0, identity_any = 0  [n = 203]:	loss = 0.043  exp loss = 0.023  adjusted loss = 0.023  adv prob = 0.250000   acc = 0.985
+  toxicity = 0, identity_any = 1  [n = 192]:	loss = 0.180  exp loss = 0.233  adjusted loss = 0.233  adv prob = 0.250000   acc = 0.927
+  toxicity = 1, identity_any = 0  [n = 203]:	loss = 0.790  exp loss = 0.569  adjusted loss = 0.569  adv prob = 0.250000   acc = 0.714
+  toxicity = 1, identity_any = 1  [n = 202]:	loss = 0.782  exp loss = 0.786  adjusted loss = 0.786  adv prob = 0.250000   acc = 0.668
+Average incurred loss: 0.452  
+Average sample loss: 0.452  
+Average acc: 0.811  
+  toxicity = 0, identity_any = 0  [n = 188]:	loss = 0.051  exp loss = 0.020  adjusted loss = 0.020  adv prob = 0.250000   acc = 0.968
+  toxicity = 0, identity_any = 1  [n = 195]:	loss = 0.206  exp loss = 0.168  adjusted loss = 0.168  adv prob = 0.250000   acc = 0.882
+  toxicity = 1, identity_any = 0  [n = 211]:	loss = 0.787  exp loss = 0.839  adjusted loss = 0.839  adv prob = 0.250000   acc = 0.716
+  toxicity = 1, identity_any = 1  [n = 206]:	loss = 0.710  exp loss = 0.906  adjusted loss = 0.906  adv prob = 0.250000   acc = 0.699
+Average incurred loss: 0.394  
+Average sample loss: 0.394  
+Average acc: 0.826  
+  toxicity = 0, identity_any = 0  [n = 202]:	loss = 0.108  exp loss = 0.140  adjusted loss = 0.140  adv prob = 0.250000   acc = 0.946
+  toxicity = 0, identity_any = 1  [n = 184]:	loss = 0.290  exp loss = 0.339  adjusted loss = 0.339  adv prob = 0.250000   acc = 0.842
+  toxicity = 1, identity_any = 0  [n = 201]:	loss = 0.571  exp loss = 0.507  adjusted loss = 0.507  adv prob = 0.250000   acc = 0.781
+  toxicity = 1, identity_any = 1  [n = 213]:	loss = 0.588  exp loss = 0.573  adjusted loss = 0.573  adv prob = 0.250000   acc = 0.742
+Average incurred loss: 0.420  
+Average sample loss: 0.420  
+Average acc: 0.839  
+  toxicity = 0, identity_any = 0  [n = 209]:	loss = 0.080  exp loss = 0.078  adjusted loss = 0.078  adv prob = 0.250000   acc = 0.967
+  toxicity = 0, identity_any = 1  [n = 197]:	loss = 0.255  exp loss = 0.310  adjusted loss = 0.310  adv prob = 0.250000   acc = 0.868
+  toxicity = 1, identity_any = 0  [n = 200]:	loss = 0.762  exp loss = 0.782  adjusted loss = 0.782  adv prob = 0.250000   acc = 0.760
+  toxicity = 1, identity_any = 1  [n = 194]:	loss = 0.602  exp loss = 0.530  adjusted loss = 0.530  adv prob = 0.250000   acc = 0.753
+Average incurred loss: 0.371  
+Average sample loss: 0.371  
+Average acc: 0.851  
+  toxicity = 0, identity_any = 0  [n = 181]:	loss = 0.066  exp loss = 0.039  adjusted loss = 0.039  adv prob = 0.250000   acc = 0.967
+  toxicity = 0, identity_any = 1  [n = 211]:	loss = 0.268  exp loss = 0.213  adjusted loss = 0.213  adv prob = 0.250000   acc = 0.863
+  toxicity = 1, identity_any = 0  [n = 205]:	loss = 0.581  exp loss = 0.610  adjusted loss = 0.610  adv prob = 0.250000   acc = 0.800
+  toxicity = 1, identity_any = 1  [n = 203]:	loss = 0.537  exp loss = 0.416  adjusted loss = 0.416  adv prob = 0.250000   acc = 0.788
+Average incurred loss: 0.329  
+Average sample loss: 0.329  
+Average acc: 0.855  
+  toxicity = 0, identity_any = 0  [n = 172]:	loss = 0.116  exp loss = 0.111  adjusted loss = 0.111  adv prob = 0.250000   acc = 0.936
+  toxicity = 0, identity_any = 1  [n = 179]:	loss = 0.273  exp loss = 0.256  adjusted loss = 0.256  adv prob = 0.250000   acc = 0.855
+  toxicity = 1, identity_any = 0  [n = 147]:	loss = 0.393  exp loss = 0.349  adjusted loss = 0.349  adv prob = 0.250000   acc = 0.850
+  toxicity = 1, identity_any = 1  [n = 170]:	loss = 0.550  exp loss = 0.626  adjusted loss = 0.626  adv prob = 0.250000   acc = 0.776

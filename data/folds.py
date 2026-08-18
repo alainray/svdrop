@@ -1,12 +1,7 @@
 import numpy as np
 import torch
-
-from data import dro_dataset
-
 import bisect
 import warnings
-
-from torch._utils import _accumulate
 from torch import randperm, default_generator
 
 
@@ -22,7 +17,6 @@ class Subset(torch.utils.data.Dataset):
 
         self.group_array = self.get_group_array(re_evaluate=True)
         self.label_array = self.get_label_array(re_evaluate=True)
-        
 
     def __getitem__(self, idx):
         return self.dataset[self.indices[idx]]
@@ -32,13 +26,9 @@ class Subset(torch.utils.data.Dataset):
 
     def get_group_array(self, re_evaluate=True):
         """Return an array [g_x1, g_x2, ...]"""
-        # setting re_evaluate=False helps us over-write the group array if necessary (2-group DRO)
         if re_evaluate:
-            #print("Subset indices", self.indices[:5])
-            #print("Tipo2",type(self.dataset.get_group_array()[self.indices]))
-            group_array = self.dataset.get_group_array()[self.indices]        
+            group_array = self.dataset.get_group_array()[self.indices]
             assert len(group_array) == len(self)
-            #print("SUBSET",group_array[:5])
             return group_array
         else:
             return self.group_array
@@ -54,9 +44,7 @@ class Subset(torch.utils.data.Dataset):
 
 class ConcatDataset(torch.utils.data.ConcatDataset):
     """
-    Concate datasets
-
-    Extends the default torch class to support group and label arrays.
+    Concatenate datasets, preserving group/label arrays.
     """
     def __init__(self, datasets):
         super(ConcatDataset, self).__init__(datasets)
@@ -82,25 +70,7 @@ def get_fold(
     seed=0,
     shuffle=True,
 ):
-    """Returns (train, valid) splits of the dataset.
-
-    Args:
-      dataset (DRODataset): the dataset to split into (train, valid) splits.
-      cross_validation_ratio (float): valid set size is this times the size of
-          the dataset.
-      num_valid_per_point (int): number of times each point appears in a
-          validation set.
-      seed (int): under the same seed, the output of this is guaranteed to be
-          the same.
-      shuffle (bool): whether to shuffle the training-set for cross validation
-          or not (used for debugging can be removed later.)
-
-    Returns:
-      folds (list[list[[(DRODataset, DRODataset)]]): the (train, valid) splits.
-          In each outer list, the inner list valid sets span the entire train
-          set.  Each inner list is length: num_valid_per_point * 1 /
-          cross_validation_ratio.
-    """
+    """Returns (train, valid) splits of the dataset."""
     if fold is not None:
         indices = fold.split("_")[1:]
         sweep_ind = int(indices[0])
@@ -122,14 +92,12 @@ def get_fold(
         else:
             print("\n" * 10, "WARNING, NOT SHUFFLING", "\n" * 10)
         for i in range(num_valid_sets):
-            train_indices = indices[:i * valid_size] + indices[(i + 1) *
-                                                               valid_size:]
-            print("len(train_indices)", len(train_indices))
+            train_indices = indices[:i * valid_size] + indices[(i + 1) * valid_size:]
             train_split = Subset(dataset, train_indices)
 
             valid_indices = indices[i * valid_size:(i + 1) * valid_size]
-            print("len(valid_indices)", len(valid_indices))
             valid_split = Subset(dataset, valid_indices)
+
             if sweep_counter == 0 and i == 0:
                 print("train_split", train_split, "valid_split", valid_split)
             folds.append((train_split, valid_split))
@@ -137,8 +105,12 @@ def get_fold(
 
     if fold is not None:
         train_data_subset, val_data_subset = all_folds[sweep_ind][fold_ind]
-        # Wrap in DRODataset Objects
-        train_data = dro_dataset.DRODataset(
+
+        # ⬇️ Import local para evitar ciclo (data.folds -> data.dro_dataset -> data.folds)
+        from data import dro_dataset as _dro
+
+        # Wrap en DRODataset Objects
+        train_data = _dro.DRODataset(
             train_data_subset,
             process_item_fn=None,
             n_groups=dataset.n_groups,
@@ -146,7 +118,7 @@ def get_fold(
             group_str_fn=dataset.group_str,
         )
 
-        val_data = dro_dataset.DRODataset(
+        val_data = _dro.DRODataset(
             val_data_subset,
             process_item_fn=None,
             n_groups=dataset.n_groups,

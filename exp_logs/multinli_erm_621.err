@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/workspace1/araymond/svdrop/run_expt.py", line 9, in <module>
+    import wandb
+ModuleNotFoundError: No module named 'wandb'

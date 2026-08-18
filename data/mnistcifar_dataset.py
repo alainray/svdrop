@@ -42,7 +42,7 @@ class MNISTCIFARDataset(ConfounderDataset):
         #print(f"Reading '{os.path.join(self.data_dir, metadata_csv_name)}'")
         #self.metadata_df = pd.read_csv(
         #    os.path.join(self.data_dir, metadata_csv_name))
-        self.data = torch.load(self.data_dir) # load full tensor dataset
+        self.data = torch.load(self.data_dir, weights_only=False) # load full tensor dataset
         # Get the y values
         j = 0
         self.y_array  = []
@@ -183,7 +183,7 @@ def mnist_cifar(root, split, binarize=False):
 if __name__ == '__main__':
     ds = MNISTCIFARDataset(
     "../datasets",
-    "mnisticifar",
+    "mnistcifar",
     "0.9", # confounder_names should be in [0.0, 0.25, 0.5, 0.75, 0.9, 1.0]
     augment_data=False,
     model_type="resnet50")

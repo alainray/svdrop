@@ -1,0 +1,337 @@
+
+
+
+
+
+ Using bert params 
+
+
+
+
+
+Dataset: MultiNLI
+Shift type: confounder
+Wandb: False
+Project name: spurious
+Target name: gold_label_random
+Confounder names: ['sentence2_has_negation']
+Up weight: 0
+Resume: False
+Finetune: False
+Normalize: False
+Recalculate groups: False
+Unfreeze: 0
+Restart layers: 0
+Minority fraction: None
+Imbalance ratio: None
+Fraction: 1.0
+Root dir: ../datasets
+Reweight groups: False
+Augment data: False
+Val fraction: 0.1
+Loss type: erm
+Alpha: 0.2
+Generalization adjustment: 0.0
+Sv dropout: 0.0
+Automatic adjustment: False
+Robust step size: 0.01
+Joint dro alpha: 1
+Use normalized loss: False
+Btl: False
+Hinge: False
+Model: bert
+Train from scratch: False
+Pretrained path: 
+N epochs: 5
+Batch size: 32
+Lr: 2e-05
+Scheduler: False
+L1: 0.0
+Weight decay: 0.0
+Gamma: 0.1
+Minimum variational weight: 0
+Seed: 111
+Accum: 1
+Show progress: False
+Log dir: results/MultiNLI/erm/model_outputs_111
+Log every: 50
+Save step: 10
+Save best: True
+Save last: True
+Use bert params: 1
+Num folds per sweep: 5
+Num sweeps: 4
+Q: 0.7
+Metadata csv name: metadata.csv
+Fold: None
+Metadata path: None
+Aug col: None
+Max grad norm: 1.0
+Adam epsilon: 1e-08
+Warmup steps: 0
+
+Training Data...
+    gold_label_random = 0, sentence2_has_negation = 0: n = 57498
+    gold_label_random = 0, sentence2_has_negation = 1: n = 11158
+    gold_label_random = 1, sentence2_has_negation = 0: n = 67376
+    gold_label_random = 1, sentence2_has_negation = 1: n = 1521
+    gold_label_random = 2, sentence2_has_negation = 0: n = 66630
+    gold_label_random = 2, sentence2_has_negation = 1: n = 1992
+Validation Data...
+    gold_label_random = 0, sentence2_has_negation = 0: n = 22814
+    gold_label_random = 0, sentence2_has_negation = 1: n = 4634
+    gold_label_random = 1, sentence2_has_negation = 0: n = 26949
+    gold_label_random = 1, sentence2_has_negation = 1: n = 613
+    gold_label_random = 2, sentence2_has_negation = 0: n = 26655
+    gold_label_random = 2, sentence2_has_negation = 1: n = 797
+Test Data...
+    gold_label_random = 0, sentence2_has_negation = 0: n = 34597
+    gold_label_random = 0, sentence2_has_negation = 1: n = 6655
+    gold_label_random = 1, sentence2_has_negation = 0: n = 40496
+    gold_label_random = 1, sentence2_has_negation = 1: n = 886
+    gold_label_random = 2, sentence2_has_negation = 0: n = 39930
+    gold_label_random = 2, sentence2_has_negation = 1: n = 1148
+Training
+bert.embeddings.word_embeddings.weight True
+bert.embeddings.position_embeddings.weight True
+bert.embeddings.token_type_embeddings.weight True
+bert.embeddings.LayerNorm.weight True
+bert.embeddings.LayerNorm.bias True
+bert.encoder.layer.0.attention.self.query.weight True
+bert.encoder.layer.0.attention.self.query.bias True
+bert.encoder.layer.0.attention.self.key.weight True
+bert.encoder.layer.0.attention.self.key.bias True
+bert.encoder.layer.0.attention.self.value.weight True
+bert.encoder.layer.0.attention.self.value.bias True
+bert.encoder.layer.0.attention.output.dense.weight True
+bert.encoder.layer.0.attention.output.dense.bias True
+bert.encoder.layer.0.attention.output.LayerNorm.weight True
+bert.encoder.layer.0.attention.output.LayerNorm.bias True
+bert.encoder.layer.0.intermediate.dense.weight True
+bert.encoder.layer.0.intermediate.dense.bias True
+bert.encoder.layer.0.output.dense.weight True
+bert.encoder.layer.0.output.dense.bias True
+bert.encoder.layer.0.output.LayerNorm.weight True
+bert.encoder.layer.0.output.LayerNorm.bias True
+bert.encoder.layer.1.attention.self.query.weight True
+bert.encoder.layer.1.attention.self.query.bias True
+bert.encoder.layer.1.attention.self.key.weight True
+bert.encoder.layer.1.attention.self.key.bias True
+bert.encoder.layer.1.attention.self.value.weight True
+bert.encoder.layer.1.attention.self.value.bias True
+bert.encoder.layer.1.attention.output.dense.weight True
+bert.encoder.layer.1.attention.output.dense.bias True
+bert.encoder.layer.1.attention.output.LayerNorm.weight True
+bert.encoder.layer.1.attention.output.LayerNorm.bias True
+bert.encoder.layer.1.intermediate.dense.weight True
+bert.encoder.layer.1.intermediate.dense.bias True
+bert.encoder.layer.1.output.dense.weight True
+bert.encoder.layer.1.output.dense.bias True
+bert.encoder.layer.1.output.LayerNorm.weight True
+bert.encoder.layer.1.output.LayerNorm.bias True
+bert.encoder.layer.2.attention.self.query.weight True
+bert.encoder.layer.2.attention.self.query.bias True
+bert.encoder.layer.2.attention.self.key.weight True
+bert.encoder.layer.2.attention.self.key.bias True
+bert.encoder.layer.2.attention.self.value.weight True
+bert.encoder.layer.2.attention.self.value.bias True
+bert.encoder.layer.2.attention.output.dense.weight True
+bert.encoder.layer.2.attention.output.dense.bias True
+bert.encoder.layer.2.attention.output.LayerNorm.weight True
+bert.encoder.layer.2.attention.output.LayerNorm.bias True
+bert.encoder.layer.2.intermediate.dense.weight True
+bert.encoder.layer.2.intermediate.dense.bias True
+bert.encoder.layer.2.output.dense.weight True
+bert.encoder.layer.2.output.dense.bias True
+bert.encoder.layer.2.output.LayerNorm.weight True
+bert.encoder.layer.2.output.LayerNorm.bias True
+bert.encoder.layer.3.attention.self.query.weight True
+bert.encoder.layer.3.attention.self.query.bias True
+bert.encoder.layer.3.attention.self.key.weight True
+bert.encoder.layer.3.attention.self.key.bias True
+bert.encoder.layer.3.attention.self.value.weight True
+bert.encoder.layer.3.attention.self.value.bias True
+bert.encoder.layer.3.attention.output.dense.weight True
+bert.encoder.layer.3.attention.output.dense.bias True
+bert.encoder.layer.3.attention.output.LayerNorm.weight True
+bert.encoder.layer.3.attention.output.LayerNorm.bias True
+bert.encoder.layer.3.intermediate.dense.weight True
+bert.encoder.layer.3.intermediate.dense.bias True
+bert.encoder.layer.3.output.dense.weight True
+bert.encoder.layer.3.output.dense.bias True
+bert.encoder.layer.3.output.LayerNorm.weight True
+bert.encoder.layer.3.output.LayerNorm.bias True
+bert.encoder.layer.4.attention.self.query.weight True
+bert.encoder.layer.4.attention.self.query.bias True
+bert.encoder.layer.4.attention.self.key.weight True
+bert.encoder.layer.4.attention.self.key.bias True
+bert.encoder.layer.4.attention.self.value.weight True
+bert.encoder.layer.4.attention.self.value.bias True
+bert.encoder.layer.4.attention.output.dense.weight True
+bert.encoder.layer.4.attention.output.dense.bias True
+bert.encoder.layer.4.attention.output.LayerNorm.weight True
+bert.encoder.layer.4.attention.output.LayerNorm.bias True
+bert.encoder.layer.4.intermediate.dense.weight True
+bert.encoder.layer.4.intermediate.dense.bias True
+bert.encoder.layer.4.output.dense.weight True
+bert.encoder.layer.4.output.dense.bias True
+bert.encoder.layer.4.output.LayerNorm.weight True
+bert.encoder.layer.4.output.LayerNorm.bias True
+bert.encoder.layer.5.attention.self.query.weight True
+bert.encoder.layer.5.attention.self.query.bias True
+bert.encoder.layer.5.attention.self.key.weight True
+bert.encoder.layer.5.attention.self.key.bias True
+bert.encoder.layer.5.attention.self.value.weight True
+bert.encoder.layer.5.attention.self.value.bias True
+bert.encoder.layer.5.attention.output.dense.weight True
+bert.encoder.layer.5.attention.output.dense.bias True
+bert.encoder.layer.5.attention.output.LayerNorm.weight True
+bert.encoder.layer.5.attention.output.LayerNorm.bias True
+bert.encoder.layer.5.intermediate.dense.weight True
+bert.encoder.layer.5.intermediate.dense.bias True
+bert.encoder.layer.5.output.dense.weight True
+bert.encoder.layer.5.output.dense.bias True
+bert.encoder.layer.5.output.LayerNorm.weight True
+bert.encoder.layer.5.output.LayerNorm.bias True
+bert.encoder.layer.6.attention.self.query.weight True
+bert.encoder.layer.6.attention.self.query.bias True
+bert.encoder.layer.6.attention.self.key.weight True
+bert.encoder.layer.6.attention.self.key.bias True
+bert.encoder.layer.6.attention.self.value.weight True
+bert.encoder.layer.6.attention.self.value.bias True
+bert.encoder.layer.6.attention.output.dense.weight True
+bert.encoder.layer.6.attention.output.dense.bias True
+bert.encoder.layer.6.attention.output.LayerNorm.weight True
+bert.encoder.layer.6.attention.output.LayerNorm.bias True
+bert.encoder.layer.6.intermediate.dense.weight True
+bert.encoder.layer.6.intermediate.dense.bias True
+bert.encoder.layer.6.output.dense.weight True
+bert.encoder.layer.6.output.dense.bias True
+bert.encoder.layer.6.output.LayerNorm.weight True
+bert.encoder.layer.6.output.LayerNorm.bias True
+bert.encoder.layer.7.attention.self.query.weight True
+bert.encoder.layer.7.attention.self.query.bias True
+bert.encoder.layer.7.attention.self.key.weight True
+bert.encoder.layer.7.attention.self.key.bias True
+bert.encoder.layer.7.attention.self.value.weight True
+bert.encoder.layer.7.attention.self.value.bias True
+bert.encoder.layer.7.attention.output.dense.weight True
+bert.encoder.layer.7.attention.output.dense.bias True
+bert.encoder.layer.7.attention.output.LayerNorm.weight True
+bert.encoder.layer.7.attention.output.LayerNorm.bias True
+bert.encoder.layer.7.intermediate.dense.weight True
+bert.encoder.layer.7.intermediate.dense.bias True
+bert.encoder.layer.7.output.dense.weight True
+bert.encoder.layer.7.output.dense.bias True
+bert.encoder.layer.7.output.LayerNorm.weight True
+bert.encoder.layer.7.output.LayerNorm.bias True
+bert.encoder.layer.8.attention.self.query.weight True
+bert.encoder.layer.8.attention.self.query.bias True
+bert.encoder.layer.8.attention.self.key.weight True
+bert.encoder.layer.8.attention.self.key.bias True
+bert.encoder.layer.8.attention.self.value.weight True
+bert.encoder.layer.8.attention.self.value.bias True
+bert.encoder.layer.8.attention.output.dense.weight True
+bert.encoder.layer.8.attention.output.dense.bias True
+bert.encoder.layer.8.attention.output.LayerNorm.weight True
+bert.encoder.layer.8.attention.output.LayerNorm.bias True
+bert.encoder.layer.8.intermediate.dense.weight True
+bert.encoder.layer.8.intermediate.dense.bias True
+bert.encoder.layer.8.output.dense.weight True
+bert.encoder.layer.8.output.dense.bias True
+bert.encoder.layer.8.output.LayerNorm.weight True
+bert.encoder.layer.8.output.LayerNorm.bias True
+bert.encoder.layer.9.attention.self.query.weight True
+bert.encoder.layer.9.attention.self.query.bias True
+bert.encoder.layer.9.attention.self.key.weight True
+bert.encoder.layer.9.attention.self.key.bias True
+bert.encoder.layer.9.attention.self.value.weight True
+bert.encoder.layer.9.attention.self.value.bias True
+bert.encoder.layer.9.attention.output.dense.weight True
+bert.encoder.layer.9.attention.output.dense.bias True
+bert.encoder.layer.9.attention.output.LayerNorm.weight True
+bert.encoder.layer.9.attention.output.LayerNorm.bias True
+bert.encoder.layer.9.intermediate.dense.weight True
+bert.encoder.layer.9.intermediate.dense.bias True
+bert.encoder.layer.9.output.dense.weight True
+bert.encoder.layer.9.output.dense.bias True
+bert.encoder.layer.9.output.LayerNorm.weight True
+bert.encoder.layer.9.output.LayerNorm.bias True
+bert.encoder.layer.10.attention.self.query.weight True
+bert.encoder.layer.10.attention.self.query.bias True
+bert.encoder.layer.10.attention.self.key.weight True
+bert.encoder.layer.10.attention.self.key.bias True
+bert.encoder.layer.10.attention.self.value.weight True
+bert.encoder.layer.10.attention.self.value.bias True
+bert.encoder.layer.10.attention.output.dense.weight True
+bert.encoder.layer.10.attention.output.dense.bias True
+bert.encoder.layer.10.attention.output.LayerNorm.weight True
+bert.encoder.layer.10.attention.output.LayerNorm.bias True
+bert.encoder.layer.10.intermediate.dense.weight True
+bert.encoder.layer.10.intermediate.dense.bias True
+bert.encoder.layer.10.output.dense.weight True
+bert.encoder.layer.10.output.dense.bias True
+bert.encoder.layer.10.output.LayerNorm.weight True
+bert.encoder.layer.10.output.LayerNorm.bias True
+bert.encoder.layer.11.attention.self.query.weight True
+bert.encoder.layer.11.attention.self.query.bias True
+bert.encoder.layer.11.attention.self.key.weight True
+bert.encoder.layer.11.attention.self.key.bias True
+bert.encoder.layer.11.attention.self.value.weight True
+bert.encoder.layer.11.attention.self.value.bias True
+bert.encoder.layer.11.attention.output.dense.weight True
+bert.encoder.layer.11.attention.output.dense.bias True
+bert.encoder.layer.11.attention.output.LayerNorm.weight True
+bert.encoder.layer.11.attention.output.LayerNorm.bias True
+bert.encoder.layer.11.intermediate.dense.weight True
+bert.encoder.layer.11.intermediate.dense.bias True
+bert.encoder.layer.11.output.dense.weight True
+bert.encoder.layer.11.output.dense.bias True
+bert.encoder.layer.11.output.LayerNorm.weight True
+bert.encoder.layer.11.output.LayerNorm.bias True
+bert.pooler.dense.weight True
+bert.pooler.dense.bias True
+classifier.weight True
+classifier.bias True
+
+t_total is 32215
+
+
+Epoch [0]:
+Training:
+Average incurred loss: 1.110  
+Average sample loss: 1.110  
+Average acc: 0.332  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 444]:	loss = 1.155  exp loss = 1.134  adjusted loss = 1.134  adv prob = 0.166667   acc = 0.270
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 74]:	loss = 1.122  exp loss = 1.087  adjusted loss = 1.087  adv prob = 0.166667   acc = 0.378
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 556]:	loss = 1.088  exp loss = 1.079  adjusted loss = 1.079  adv prob = 0.166667   acc = 0.371
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 10]:	loss = 1.129  exp loss = 1.250  adjusted loss = 1.250  adv prob = 0.166667   acc = 0.300
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 501]:	loss = 1.092  exp loss = 1.091  adjusted loss = 1.091  adv prob = 0.166667   acc = 0.341
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 15]:	loss = 1.109  exp loss = 1.025  adjusted loss = 1.025  adv prob = 0.166667   acc = 0.267
+Average incurred loss: 1.038  
+Average sample loss: 1.038  
+Average acc: 0.468  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 449]:	loss = 1.071  exp loss = 1.065  adjusted loss = 1.065  adv prob = 0.166667   acc = 0.414
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 84]:	loss = 0.859  exp loss = 0.630  adjusted loss = 0.630  adv prob = 0.166667   acc = 0.738
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 500]:	loss = 0.973  exp loss = 0.839  adjusted loss = 0.839  adv prob = 0.166667   acc = 0.490
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 19]:	loss = 1.125  exp loss = 1.139  adjusted loss = 1.139  adv prob = 0.166667   acc = 0.263
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 533]:	loss = 1.090  exp loss = 1.101  adjusted loss = 1.101  adv prob = 0.166667   acc = 0.463
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 15]:	loss = 1.272  exp loss = 1.261  adjusted loss = 1.261  adv prob = 0.166667   acc = 0.267
+Average incurred loss: 0.927  
+Average sample loss: 0.927  
+Average acc: 0.564  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 451]:	loss = 1.016  exp loss = 1.021  adjusted loss = 1.021  adv prob = 0.166667   acc = 0.437
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 98]:	loss = 0.334  exp loss = 0.255  adjusted loss = 0.255  adv prob = 0.166667   acc = 0.990
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 519]:	loss = 0.873  exp loss = 0.807  adjusted loss = 0.807  adv prob = 0.166667   acc = 0.590
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 9]:	loss = 1.159  exp loss = 1.198  adjusted loss = 1.198  adv prob = 0.166667   acc = 0.444
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 511]:	loss = 0.988  exp loss = 0.917  adjusted loss = 0.917  adv prob = 0.166667   acc = 0.583
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 12]:	loss = 1.937  exp loss = 1.775  adjusted loss = 1.775  adv prob = 0.166667   acc = 0.000
+Average incurred loss: 0.830  
+Average sample loss: 0.830  
+Average acc: 0.633  
+  gold_label_random = 0, sentence2_has_negation = 0  [n = 461]:	loss = 0.942  exp loss = 0.878  adjusted loss = 0.878  adv prob = 0.166667   acc = 0.516
+  gold_label_random = 0, sentence2_has_negation = 1  [n = 89]:	loss = 0.206  exp loss = 0.174  adjusted loss = 0.174  adv prob = 0.166667   acc = 0.978
+  gold_label_random = 1, sentence2_has_negation = 0  [n = 513]:	loss = 0.730  exp loss = 0.765  adjusted loss = 0.765  adv prob = 0.166667   acc = 0.706
+  gold_label_random = 1, sentence2_has_negation = 1  [n = 11]:	loss = 1.360  exp loss = 1.296  adjusted loss = 1.296  adv prob = 0.166667   acc = 0.273
+  gold_label_random = 2, sentence2_has_negation = 0  [n = 515]:	loss = 0.916  exp loss = 0.853  adjusted loss = 0.853  adv prob = 0.166667   acc = 0.617
+  gold_label_random = 2, sentence2_has_negation = 1  [n = 11]:	loss = 1.306  exp loss = 1.536  adjusted loss = 1.536  adv prob = 0.166667   acc = 0.364

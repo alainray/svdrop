@@ -40,7 +40,7 @@ class MultiNLIDataset(ConfounderDataset):
         assert confounder_names[0] == "sentence2_has_negation"
         assert target_name in ["gold_label_preset", "gold_label_random"]
         assert augment_data == False
-        assert model_type == "bert"
+        assert "bert" in model_type
 
         self.data_dir = os.path.join(self.root_dir, "multinli", "data")
         self.glue_dir = os.path.join(self.root_dir, "multinli", "glue_data")
@@ -84,7 +84,7 @@ class MultiNLIDataset(ConfounderDataset):
                 "cached_dev_bert-base-uncased_128_mnli-mm",
         ]:
 
-            features = torch.load(os.path.join(self.glue_dir, feature_file))
+            features = torch.load(os.path.join(self.glue_dir, feature_file), weights_only=False)
 
             self.features_array += features
 
