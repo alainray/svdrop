@@ -19,7 +19,13 @@
 # Never set CUDA_VISIBLE_DEVICES here, and never run several trainings inside one
 # allocation: both put work on GPUs the scheduler did not hand to this job.
 #
-# Submit with:  sbatch --dependency=afterok:<erm_job> --array=0-14%4 scripts/wb95_lambda2.sh
+# The lambda grid can be overridden as the first argument, so an extra range can
+# be swept without touching the script:
+#
+#   sbatch --array=0-14%4 scripts/wb95_lambda2.sh              # rejilla por defecto
+#   sbatch --array=0-14%4 scripts/wb95_lambda2.sh "3 4 5 7 10" # otra rejilla
+#
+# The array must have 3 tasks per lambda (one per seed).
 #
 #SBATCH --job-name=wb95_lambda2
 #SBATCH -t 1-00:00
@@ -39,7 +45,7 @@ ROOT=/workspace1/asoto/araymond/svdrop
 PYTHON=~/pyenv/versions/mini/bin/python3
 cd "$ROOT"
 
-LAMBDAS=(0 0.01 0.1 0.3 1.0)
+read -r -a LAMBDAS <<< "${1:-0 0.01 0.1 0.3 1.0}"
 SEEDS=(111 222 333)
 TASK="${SLURM_ARRAY_TASK_ID:-0}"
 WD="${LAMBDAS[$((TASK / 3))]}"
