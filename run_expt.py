@@ -160,6 +160,7 @@ def main(args):
         normalize = args.normalize,
         from_file = args.pretrained_path,
         restart_layers=args.restart_layers,
+        reinit_head=args.reinit_head,
     )
 
     if args.finetune and not args.train_frozen:
@@ -260,6 +261,10 @@ if __name__ == "__main__":
     # is off. Pass --train_frozen for the old behaviour, which is what every run
     # made before this flag existed used. See NAMING.md.
     parser.add_argument("--train_frozen", default=False, action="store_true")
+    # Empezar el reentrenamiento de la ultima capa desde una cabeza al azar en
+    # lugar de la heredada del checkpoint. A diferencia de --normalize, no toca
+    # el espacio de features.
+    parser.add_argument("--reinit_head", default=False, action="store_true")
     # Precompute the frozen backbone's output once instead of every epoch. Only
     # valid when the backbone really is fixed; see feature_cache.py.
     parser.add_argument("--cache_features", default=False, action="store_true")

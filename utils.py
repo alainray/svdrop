@@ -304,7 +304,8 @@ def get_model(model, pretrained, resume, n_classes, dataset, log_dir, finetune, 
 '''
 
 def get_model(model, pretrained, resume, n_classes, dataset, log_dir,
-              finetune, unfreeze, normalize, from_file, restart_layers):
+              finetune, unfreeze, normalize, from_file, restart_layers,
+              reinit_head=False):
 
     model_name = model
     d = None  # solo se usará para arquitecturas tipo ResNet
@@ -370,6 +371,18 @@ def get_model(model, pretrained, resume, n_classes, dataset, log_dir,
     if resume:
         weights = torch.load(os.path.join(log_dir, "last_model.pth"), map_location="cpu")
         model.load_state_dict(weights)
+
+    # === Cabeza al azar en lugar de la heredada del checkpoint ===
+    # Distinto de --normalize, que ademas antepone Normalize01 a la cabeza y por
+    # tanto cambia el espacio en que vive: esto solo reemplaza los pesos.
+    if reinit_head:
+        if hasattr(model, "fc"):
+            model.fc = SVDropClassifier(d, n_classes)
+        elif hasattr(model, "classifier"):
+            old = model.classifier
+            model.classifier = nn.Linear(old.in_features, old.out_features)
+        else:
+            raise ValueError("--reinit_head no sabe cual es la cabeza de este modelo.")
 
     # === Normalización (solo tiene sentido para arquitecturas con .fc) ===
     if normalize and hasattr(model, "fc"):
