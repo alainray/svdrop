@@ -13,7 +13,10 @@
 # worst-group climbs from 76 to 92.
 #
 # This trains the whole network, so it cannot use --cache_features and it is
-# expensive: hours per run for the vision datasets, more for BERT.
+# expensive: hours per run for the vision datasets, more for BERT. The ialab
+# partition caps a job at one day, and asking for more leaves it stuck forever
+# with Reason=PartitionTimeLimit, so anything that will not fit in 24 h has to be
+# split rather than given a longer limit.
 #
 # One seed per array task, one GPU per task, assigned by SLURM.
 # Never set CUDA_VISIBLE_DEVICES here, and never run several trainings inside one
@@ -22,7 +25,7 @@
 # Submit with:  sbatch --array=0-2 scripts/gdro_e2e.sh CUB 0
 #
 #SBATCH --job-name=gdro_e2e
-#SBATCH -t 2-00:00
+#SBATCH -t 1-00:00
 #SBATCH -o /workspace1/asoto/araymond/svdrop/exp_logs/%x_%A_%a.out
 #SBATCH -e /workspace1/asoto/araymond/svdrop/exp_logs/%x_%A_%a.err
 #SBATCH --chdir=/workspace1/asoto/araymond/svdrop
