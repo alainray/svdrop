@@ -201,8 +201,13 @@ def _spurious_directions(features, g, n_groups, n_classes, n_pca, k, logger):
     ridge = 1e-6 * torch.diag(ZtZ).mean() * torch.eye(q, dtype=Z.dtype)
     w = torch.linalg.solve(ZtZ + ridge, Z.T @ s.double())
 
-    contrib = (w.abs() * Z.std(0)).cpu()
-    order = torch.argsort(contrib, descending=True)
+    # Las coordenadas principales no estan correlacionadas, asi que la varianza
+    # de la prediccion se descompone sin terminos cruzados: Var(s_hat) = sum_i
+    # w_i^2 sigma_i^2. Cada direccion tiene entonces una cuota exacta de la senal
+    # espuria, y quedarse con las k mayores es la eleccion optima para el subconjunto
+    # de tamano k, no una aproximacion voraz.
+    share = (w * Z.std(0)).pow(2).cpu()
+    order = torch.argsort(share, descending=True)
     dropped = order[:k]
 
     mask = torch.ones(q, dtype=X.dtype)
@@ -213,8 +218,8 @@ def _spurious_directions(features, g, n_groups, n_classes, n_pca, k, logger):
         f"Dropping {k} of {q} principal directions most aligned with the "
         f"spurious attribute: indices {sorted(dropped.tolist())}\n"
         f"  they carry {100 * var[dropped].sum() / var.sum():.2f}% of the "
-        f"feature variance and {100 * contrib[dropped].sum() / contrib.sum():.2f}% "
-        f"of the spurious probe's total contribution\n"
+        f"feature variance and {100 * share[dropped].sum() / share.sum():.2f}% "
+        f"of the variance of the spurious probe's prediction\n"
     )
 
     drop = 1.0 - mask
