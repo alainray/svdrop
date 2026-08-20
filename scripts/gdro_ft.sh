@@ -33,7 +33,14 @@
 #   sbatch --export=ALL,PRETRAIN_PATTERN=pretrained_models/CUB/erm_95_wd1e-02_SEED.pth,\
 #          FEAT_TAG=__feat-ermwd1e-2 --array=0-11%4 scripts/gdro_ft.sh CUB "0 0.1 1.0 3"
 #
-# The array needs 3 tasks per lambda (one per seed).
+# Exporting DROP_DIRS_LIST sweeps the number of spurious feature directions
+# removed instead of the weight decay, which then stays fixed at the single value
+# given as the second argument:
+#
+#   sbatch --export=ALL,DROP_DIRS_LIST="1 2 3 4 5" --array=0-14%4 \
+#          scripts/gdro_ft.sh CUB 0 reinit
+#
+# The array needs 3 tasks per swept value (one per seed).
 #
 #SBATCH --job-name=gdro_ft
 #SBATCH -t 1-00:00
@@ -61,8 +68,18 @@ configure "$DATASET"
 read -r -a LAMBDAS <<< "${2:-$WD_FT}"
 SEEDS=(111 222 333)
 TASK="${SLURM_ARRAY_TASK_ID:-0}"
-WD="${LAMBDAS[$((TASK / 3))]}"
 SEED="${SEEDS[$((TASK % 3))]}"
+
+DROP=0
+DROP_SUFFIX=""
+if [ -n "${DROP_DIRS_LIST:-}" ]; then
+  read -r -a DROPS <<< "$DROP_DIRS_LIST"
+  DROP="${DROPS[$((TASK / 3))]}"
+  WD="${LAMBDAS[0]}"
+  DROP_SUFFIX="__drop-${DROP}"
+else
+  WD="${LAMBDAS[$((TASK / 3))]}"
+fi
 
 EXTRA=()
 INIT=""
@@ -80,7 +97,7 @@ PRETRAIN="${PRETRAIN_PATTERN:-$PRETRAIN}"
 CORR=$([ "$DATASET" = "CUB" ] && echo 95 || echo std)
 # FEAT_TAG marca en el nombre de que backbone salen las features cuando no es el
 # por defecto del dataset, p.ej. un ERM entrenado con otro weight decay.
-EXP="ft.erm.gdro__c-${CORR}__src-train__bal-rw__frac-1.0__wd-${WD}__lr-${LR}__ep-${EPOCHS_FT}__bn-eval${INIT}${FEAT_TAG:-}"
+EXP="ft.erm.gdro__c-${CORR}__src-train__bal-rw__frac-1.0__wd-${WD}__lr-${LR}__ep-${EPOCHS_FT}__bn-eval${INIT}${DROP_SUFFIX}${FEAT_TAG:-}"
 LOGDIR="results/${RESULTS}/${EXP}/model_outputs_${SEED}"
 mkdir -p "$LOGDIR"
 
@@ -105,7 +122,8 @@ mkdir -p "$LOGDIR"
   --reweight_groups \
   --cache_features \
   --num_workers 6 \
+  --drop_spurious_dirs "$DROP" \
   --pretrained_path "${PRETRAIN/SEED/$SEED}" \
   "${EXTRA[@]}"
 
-echo "Finished GDRO-FT ${DATASET} wd=${WD} seed=${SEED}${INIT}"
+echo "Finished GDRO-FT ${DATASET} wd=${WD} drop=${DROP} seed=${SEED}${INIT}"

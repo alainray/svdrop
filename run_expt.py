@@ -265,6 +265,10 @@ if __name__ == "__main__":
     # lugar de la heredada del checkpoint. A diferencia de --normalize, no toca
     # el espacio de features.
     parser.add_argument("--reinit_head", default=False, action="store_true")
+    # Quitar de las features congeladas las direcciones principales que mas
+    # aportan a predecir el atributo espurio. Se estima solo sobre train.
+    parser.add_argument("--drop_spurious_dirs", type=int, default=0)
+    parser.add_argument("--pca_dirs", type=int, default=200)
     # Precompute the frozen backbone's output once instead of every epoch. Only
     # valid when the backbone really is fixed; see feature_cache.py.
     parser.add_argument("--cache_features", default=False, action="store_true")

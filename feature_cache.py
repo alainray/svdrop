@@ -136,6 +136,12 @@ def build_cached_data(model, data, args, logger, device):
         features, y, g = _extract(forward, source, args.batch_size,
                                   args.num_workers, device)
         logger.write(f"Cached {split} features: {tuple(features.shape)}\n")
+        if args.drop_spurious_dirs > 0:
+            if split == "train":
+                project = _spurious_directions(
+                    features, g, source.n_groups, source.n_classes,
+                    args.pca_dirs, args.drop_spurious_dirs, logger)
+            features = project(features).float()
         cached[f"{split}_data"] = dro_dataset.DRODataset(
             TensorGroupDataset(features, y, g),
             process_item_fn=None,
@@ -159,3 +165,65 @@ def build_cached_data(model, data, args, logger, device):
     # report the head's L2 rather than the full network's. That is the quantity
     # the weight decay actually acts on.
     return cached, head.to(device)
+
+
+def _spurious_directions(features, g, n_groups, n_classes, n_pca, k, logger):
+    """Find the principal directions of the training features that carry the
+    spurious attribute, and return a projection that removes them.
+
+    This is the idea the repository is named after. The frozen ERM features are
+    decomposed into their principal directions; a linear probe is fitted on those
+    coordinates to predict the spurious attribute; and the k directions that
+    contribute most to that prediction are zeroed out. The head then sees
+    features from which the spurious subspace has been removed.
+
+    Everything is estimated on the training split alone and applied unchanged to
+    validation and test, so no label of any kind leaks from the evaluation sets.
+    """
+    n_conf = n_groups // n_classes
+    if n_conf != 2:
+        raise ValueError(
+            f"--drop_spurious_dirs assumes a binary spurious attribute, got "
+            f"{n_conf} values."
+        )
+    s = (g % n_conf).float() * 2.0 - 1.0          # atributo espurio en {-1, +1}
+
+    mu = features.mean(0, keepdim=True)
+    X = (features - mu).double()
+    q = min(n_pca, X.shape[1], X.shape[0])
+    _, _, V = torch.pca_lowrank(X, q=q, center=False)   # V: (D, q)
+    Z = X @ V                                           # (N, q)
+
+    # Sonda ridge sobre las coordenadas principales. En esa base las columnas son
+    # ortogonales, asi que el coeficiente de cada direccion mide directamente
+    # cuanto aporta a predecir el atributo espurio.
+    ZtZ = Z.T @ Z
+    ridge = 1e-6 * torch.diag(ZtZ).mean() * torch.eye(q, dtype=Z.dtype)
+    w = torch.linalg.solve(ZtZ + ridge, Z.T @ s.double())
+
+    contrib = (w.abs() * Z.std(0)).cpu()
+    order = torch.argsort(contrib, descending=True)
+    dropped = order[:k]
+
+    mask = torch.ones(q, dtype=X.dtype)
+    mask[dropped] = 0.0
+
+    var = Z.var(0)
+    logger.write(
+        f"Dropping {k} of {q} principal directions most aligned with the "
+        f"spurious attribute: indices {sorted(dropped.tolist())}\n"
+        f"  they carry {100 * var[dropped].sum() / var.sum():.2f}% of the "
+        f"feature variance and {100 * contrib[dropped].sum() / contrib.sum():.2f}% "
+        f"of the spurious probe's total contribution\n"
+    )
+
+    drop = 1.0 - mask
+
+    def project(F):
+        # Restar solo las componentes senaladas. Proyectar con (X @ V) @ V.T
+        # descartaria ademas todo lo que queda fuera del subespacio de las q
+        # componentes principales, que no es lo que se quiere medir.
+        Xf = (F - mu).double()
+        return Xf - ((Xf @ V) * drop) @ V.T + mu.double()
+
+    return project
