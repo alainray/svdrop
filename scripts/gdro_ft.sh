@@ -69,7 +69,9 @@ export HUGGINGFACE_HUB_CACHE="$HF_HOME/hub"
 mkdir -p "$HUGGINGFACE_HUB_CACHE"
 
 CORR=$([ "$DATASET" = "CUB" ] && echo 95 || echo std)
-EXP="ft.erm.gdro__c-${CORR}__src-train__bal-rw__frac-1.0__wd-${WD}__lr-${LR}__ep-${EPOCHS_FT}__bn-eval${INIT}"
+# FEAT_TAG marca en el nombre de que backbone salen las features cuando no es el
+# por defecto del dataset, p.ej. un ERM entrenado con otro weight decay.
+EXP="ft.erm.gdro__c-${CORR}__src-train__bal-rw__frac-1.0__wd-${WD}__lr-${LR}__ep-${EPOCHS_FT}__bn-eval${INIT}${FEAT_TAG:-}"
 LOGDIR="results/${RESULTS}/${EXP}/model_outputs_${SEED}"
 mkdir -p "$LOGDIR"
 
@@ -94,7 +96,7 @@ mkdir -p "$LOGDIR"
   --reweight_groups \
   --cache_features \
   --num_workers 6 \
-  --pretrained_path "${PRETRAIN/SEED/$SEED}" \
+  --pretrained_path "${PRETRAIN_OVERRIDE:-${PRETRAIN/SEED/$SEED}}" \
   "${EXTRA[@]}"
 
 echo "Finished GDRO-FT ${DATASET} wd=${WD} seed=${SEED}${INIT}"
