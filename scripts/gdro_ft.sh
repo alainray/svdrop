@@ -26,6 +26,13 @@
 #   sbatch --array=0-2      scripts/gdro_ft.sh CelebA 0            # un solo lambda
 #   sbatch --array=0-17%4   scripts/gdro_ft.sh CUB "0 0.01 0.1 0.3 1.0 3" reinit
 #
+# To read the features off a different backbone, export PRETRAIN_PATTERN (with
+# the literal word SEED where the seed goes) and FEAT_TAG, which is appended to
+# the run name so the two do not collide:
+#
+#   sbatch --export=ALL,PRETRAIN_PATTERN=pretrained_models/CUB/erm_95_wd1e-02_SEED.pth,\
+#          FEAT_TAG=__feat-ermwd1e-2 --array=0-11%4 scripts/gdro_ft.sh CUB "0 0.1 1.0 3"
+#
 # The array needs 3 tasks per lambda (one per seed).
 #
 #SBATCH --job-name=gdro_ft
@@ -68,6 +75,8 @@ export HF_HOME="$HOME/.cache/huggingface"
 export HUGGINGFACE_HUB_CACHE="$HF_HOME/hub"
 mkdir -p "$HUGGINGFACE_HUB_CACHE"
 
+PRETRAIN="${PRETRAIN_PATTERN:-$PRETRAIN}"
+
 CORR=$([ "$DATASET" = "CUB" ] && echo 95 || echo std)
 # FEAT_TAG marca en el nombre de que backbone salen las features cuando no es el
 # por defecto del dataset, p.ej. un ERM entrenado con otro weight decay.
@@ -96,7 +105,7 @@ mkdir -p "$LOGDIR"
   --reweight_groups \
   --cache_features \
   --num_workers 6 \
-  --pretrained_path "${PRETRAIN_OVERRIDE:-${PRETRAIN/SEED/$SEED}}" \
+  --pretrained_path "${PRETRAIN/SEED/$SEED}" \
   "${EXTRA[@]}"
 
 echo "Finished GDRO-FT ${DATASET} wd=${WD} seed=${SEED}${INIT}"
